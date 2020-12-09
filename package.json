@@ -1,0 +1,25 @@
+{
+  "name": "covid",
+  "version": "1.0.0",
+  "description": "SDE project",
+  "main": "app.ts",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MassimoMengarda/sde-project.git"
+  },
+  "author": "Mengarda Massimo and Zanetti Alex",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MassimoMengarda/sde-project/issues"
+  },
+  "homepage": "https://github.com/MassimoMengarda/sde-project#readme"
+}
