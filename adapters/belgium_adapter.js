@@ -25,7 +25,7 @@ function filter(data) {
         const date = elem.DATE;
         const province = elem.PROVINCE;
         let cases = elem.CASES;
-        
+
         if (date !== undefined && province !== undefined && cases !== undefined) {
             if (result[date] === undefined) {
                 result[date] = {};
