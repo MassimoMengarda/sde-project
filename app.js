@@ -10,6 +10,7 @@ app.get('/', (req, res) => {
 });
 
 require('./adapters/france_adapter').register(app);
-// require('./services/assignments').register(app);
+require('./adapters/belgium_adapter').register(app);
+//require('./adapters/italy_adapter').register(app);
 
 app.listen(PORT, () => console.log('App listening on port ' + PORT));
