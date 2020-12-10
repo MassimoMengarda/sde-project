@@ -4,23 +4,40 @@ const parse = require('csv-parse/lib/sync');
 const BASE_URL = 'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv';
 
 const getData = async (req, res) => {
-    console.log('Starting fetching Italy dataset...');
-    const data = await fetch(BASE_URL).then(fetch_res => {
-        const csv_data = parse(fetch_res.text(), {columns: true});
-        return csv_data;
-    });
-    //console.log(data);
-    // .then(resJSON => {
-    //     console.log('Done fetching\nElaborating...');
-    //     const result = filter(resJSON);
-    //     return {result: result};
-    // });
+  var result = [];
+  console.log("Starting fetching Italy dataset...");
+  const data = await fetch(BASE_URL)
+    .then((fetch_res) => {
+      const csv_data = fetch_res.text();
+      return csv_data;
+    })
+    .then((csv) => {
+      var lines = csv.toString().split("\n");
+      var headers = lines[0].split(",");
+      for (var i = 1; i < lines.length; i++) {
+        var obj = {};
+        var currentline = lines[i].split(",");
 
-    console.log('Sending data...');
-    res.status(200);
-    res.send(data);
-    console.log('Done!');
-}
+        for (var j = 0; j < headers.length; j++) {
+          obj[headers[j]] = currentline[j];
+        }
+
+        result.push(obj);
+      }
+      return { result: result };
+    });
+  //console.log(data);
+  // .then(resJSON => {
+  //     console.log('Done fetching\nElaborating...');
+  //     const result = filter(resJSON);
+  //     return {result: result};
+  // });
+
+  console.log("Sending data...");
+  res.status(200);
+  res.send(data);
+  console.log("Done!");
+};
 
 function filter(data) {
     const result = {};

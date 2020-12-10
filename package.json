@@ -4,6 +4,7 @@
   "description": "SDE project",
   "main": "app.ts",
   "dependencies": {
+    "csv-parse": "^4.14.1",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1"
   },
