@@ -9,8 +9,8 @@ app.get('/', (req, res) => {
     res.json({ msg: 'Hello world' });
 });
 
-require('./adapters/france_adapter').register(app);
-require('./adapters/belgium_adapter').register(app);
 //require('./adapters/italy_adapter').register(app);
+require('./adapters/belgium_adapter').register(app);
+require('./adapters/uk_adapter').register(app);
 
 app.listen(PORT, () => console.log('App listening on port ' + PORT));
