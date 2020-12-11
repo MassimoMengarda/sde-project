@@ -1,3 +1,5 @@
+// TODO remove if not used
+
 const now = new Date();
 
 const getDay = () => {
