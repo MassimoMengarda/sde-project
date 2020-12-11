@@ -40,16 +40,19 @@ function filter(data) {
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
             if (result[date] === undefined) {
-                result[date] = {};
+                result[date] = {provinces : {}, cases: 0};
             }
-            if (result[date][province] === undefined) {
-                result[date][province] = {cases: 0};
+            if (result[date].provinces[province] === undefined) {
+                result[date].provinces[province] = {cases: 0};
             }
             // Cases can contain <5 string, randomize the data from 0 to 5.
             if (cases === '<5') {
                 cases = Math.round(Math.random() * 5);
+            } else {
+                cases = parseInt(cases);
             }
-            result[date][province].cases += parseInt(cases);
+            result[date].provinces[province].cases += cases;
+            result[date].cases += cases;
         }
     }
     return result;

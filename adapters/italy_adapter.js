@@ -57,17 +57,19 @@ function filter(data) {
     for (const elem of data) {
         let date = elem.data;
         const province = elem.denominazione_regione;
-        const cases = elem.nuovi_positivi;
+        let cases = elem.nuovi_positivi;
 
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
             // e.g. 2020-12-10T15:30:00, take only date.
             date = date.substring(0, 10);
+            cases = parseInt(cases);
 
             if (result[date] === undefined) {
-                result[date] = {};
+                result[date] = {provinces : {}, cases: 0};
             }
-            result[date][province] = {cases: cases};
+            result[date].provinces[province] = {cases: cases};
+            result[date].cases += cases;
         }
     }
     return result;

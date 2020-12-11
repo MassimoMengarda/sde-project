@@ -47,14 +47,16 @@ async function filter(pages) {
         for (const elem of entries) {
             const date = elem.date;
             const province = elem.name;
-            const cases = elem.cases;
+            let cases = elem.cases;
 
             // Skip the rows that are not well defined.
             if (date !== undefined && province !== undefined && cases !== undefined) {
+                cases = parseInt(cases);
                 if (result[date] === undefined) {
-                    result[date] = {};
+                    result[date] = {provinces : {}, cases: 0};
                 }
-                result[date][province] = {cases: cases}; 
+                result[date].provinces[province] = {cases: cases};
+                result[date].cases += cases;
             }
         }
     }
