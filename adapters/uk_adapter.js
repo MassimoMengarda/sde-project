@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 
-const BASE_URL = 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=utla&structure' + 
+// areaType is region, but it could be utla (too detailed)
+const BASE_URL = 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=region&structure' + 
                  '={"date":"date","name":"areaName","cases":"newCasesByPublishDate"}&format=json';
 
 // Function that retrieves the whole uk dataset.
