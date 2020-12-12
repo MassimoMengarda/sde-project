@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const utils = require('./utils');
 
 const BASE_URL = 'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv';
 
@@ -55,14 +56,12 @@ function filter(data) {
 
     // Filter only data, province and cases.
     for (const elem of data) {
-        let date = elem.data;
+        const date = utils.getDate(elem.data);
         const province = elem.denominazione_regione;
         let cases = elem.nuovi_positivi;
 
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
-            // e.g. 2020-12-10T15:30:00, take only date.
-            date = date.substring(0, 10);
             cases = parseInt(cases);
 
             if (result[date] === undefined) {
