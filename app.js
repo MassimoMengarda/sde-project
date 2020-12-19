@@ -15,6 +15,7 @@ require('./adapters/belgium_adapter').register(app);
 require('./adapters/uk_adapter').register(app);
 require('./adapters/mapquest_adapter').register(app);
 require('./adapters/data_collector').register(app);
+require('./adapters/database_adapter').register(app);
 
 // require('./adapters/wikipedia_adapter').register(app); // TODO remove
 
