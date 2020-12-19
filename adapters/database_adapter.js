@@ -7,27 +7,27 @@ const databases = {};
 
 databases['belgium'] = new NeDB({ filename: './database/belgium.db' });
 databases['belgium'].loadDatabase();
-databases['belgium'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
-    if (err) {
-        console.log('Error while creating "date" index in belgium database');
-    }
-});
+// databases['belgium'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
+//     if (err) {
+//         console.log('Error while creating "date" index in belgium database');
+//     }
+// });
 
 databases['italy'] = new NeDB({ filename: './database/italy.db' });
 databases['italy'].loadDatabase();
-databases['italy'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
-    if (err) {
-        console.log('Error while creating "date" index in italy database');
-    }
-});
+// databases['italy'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
+//     if (err) {
+//         console.log('Error while creating "date" index in italy database');
+//     }
+// });
 
 databases['uk'] = new NeDB({ filename: './database/uk.db' });
 databases['uk'].loadDatabase();
-databases['uk'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
-    if (err) {
-        console.log('Error while creating "date" index in uk database');
-    }
-});
+// databases['uk'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
+//     if (err) {
+//         console.log('Error while creating "date" index in uk database');
+//     }
+// });
 
 const select = (req, res) => {
     const country = req.params.country;
@@ -67,10 +67,12 @@ const insert = (req, res) => {
 };
 
 function insertNewData(db, data) {
-    for (const d in data) {
-        db.insert(d, (err) => {
+    for (const key in data) {
+        const entry = {};
+        entry[key] = data[key];
+        db.insert(entry, (err) => {
             if (err) {
-                console.log('Data already present ' + err);
+                console.log(err);
             }
         });
     }

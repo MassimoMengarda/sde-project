@@ -47,11 +47,12 @@ async function filter(pages) {
         // Filter only data, province and cases.
         for (const elem of entries) {
             const date = elem.date;
-            const province = elem.name;
+            let province = elem.name;
             let cases = elem.cases;
 
             // Skip the rows that are not well defined.
             if (date !== undefined && province !== undefined && cases !== undefined) {
+                province = province.replace(/\./g, '');
                 cases = parseInt(cases);
                 if (result[date] === undefined) {
                     result[date] = {provinces : {}, cases: 0};

@@ -1,9 +1,12 @@
 const express = require('express');
-const app = express()
+const bodyParser = require("body-parser");
 
-const PORT = 8080
+const app = express();
+app.use(bodyParser.json({limit: '100mb', extended: true}));
 
-app.use(express.json())
+const PORT = 8080;
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.json({ msg: 'Hello world' });

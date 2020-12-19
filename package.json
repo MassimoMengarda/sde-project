@@ -4,6 +4,7 @@
   "description": "SDE project",
   "main": "app.ts",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "csv-parse": "^4.14.1",
     "express": "^4.17.1",
     "nedb": "^1.8.0",

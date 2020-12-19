@@ -2,16 +2,16 @@ const fetch = require('node-fetch');
 const utils = require('./utils');
 
 // TODO set in a config file.
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://localhost:8080/';
 
 // Function that fetches all the endpoints and process the data.
 const getAllData = async (req, res) => {
-    console.log("Fetching all the endpoints")
+    console.log('Fetching all the endpoints')
 
     // Fetch the endpoints.
-    const belgiumData = await fetchEndPoint('/belgium');
-    const italyData = await fetchEndPoint('/italy');
-    const ukData = await fetchEndPoint('/uk');
+    const belgiumData = await fetchEndPoint('belgium');
+    const italyData = await fetchEndPoint('italy');
+    const ukData = await fetchEndPoint('uk');
     
     // TODO process -> wikipedia and database.
     const result = {
@@ -55,9 +55,9 @@ const getDataByPeriod = async (req, res) => {
     };
 
     // Get the data by dates.
-    result.belgium = await getDataByDates('/belgium', dates);
-    result.italy = await getDataByDates('/italy', dates);
-    result.uk = await getDataByDates('/uk', dates);
+    result.belgium = await getDataByDates('belgium', dates);
+    result.italy = await getDataByDates('italy', dates);
+    result.uk = await getDataByDates('uk', dates);
 
     // Send the data to the client wih response code 200.
     res.status(200);
@@ -84,6 +84,14 @@ async function fetchEndPoint(endPoint) {
     const data = await fetch(BASE_URL + endPoint).then(fetch_res => {
         return fetch_res.json();
     });
+
+    console.log('Updating db for endpoint ' + endPoint);
+    await fetch(BASE_URL + 'db/' + endPoint, {
+        method: 'post',
+        body:    JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+    });
+
     return data;
 }
 

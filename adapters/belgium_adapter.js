@@ -34,11 +34,12 @@ function filter(data) {
     // Filter only data, province and cases.
     for (const elem of data) {
         const date = elem.DATE;
-        const province = elem.PROVINCE;
+        let province = elem.PROVINCE;
         let cases = elem.CASES;
 
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
+            province = province.replace(/\./g, '');
             if (result[date] === undefined) {
                 result[date] = {provinces : {}, cases: 0};
             }

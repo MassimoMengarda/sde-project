@@ -57,11 +57,12 @@ function filter(data) {
     // Filter only data, province and cases.
     for (const elem of data) {
         const date = utils.getDate(elem.data);
-        const province = elem.denominazione_regione;
+        let province = elem.denominazione_regione;
         let cases = elem.nuovi_positivi;
 
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
+            province = province.replace(/\./g, '');
             cases = parseInt(cases);
 
             if (result[date] === undefined) {
