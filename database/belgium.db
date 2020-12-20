@@ -292,3 +292,4 @@
 {"date":"2020-08-13","cases":797,"provinces":{"Antwerpen":{"cases":179},"Brussels":{"cases":157},"VlaamsBrabant":{"cases":68},"BrabantWallon":{"cases":33},"WestVlaanderen":{"cases":46},"OostVlaanderen":{"cases":93},"Hainaut":{"cases":60},"Liège":{"cases":75},"Limburg":{"cases":37},"Luxembourg":{"cases":16},"Namur":{"cases":33}},"_id":"zhaPxlZbmAHR0iZw"}
 {"date":"2020-03-09","cases":173,"provinces":{"Antwerpen":{"cases":18},"Brussels":{"cases":29},"VlaamsBrabant":{"cases":29},"BrabantWallon":{"cases":14},"WestVlaanderen":{"cases":3},"OostVlaanderen":{"cases":16},"Hainaut":{"cases":19},"Liège":{"cases":30},"Limburg":{"cases":6},"Namur":{"cases":9}},"_id":"zlOplJAw5F20XkBz"}
 {"$$indexCreated":{"fieldName":"date","unique":true,"sparse":false}}
+{"date":"2020-12-19","cases":3,"provinces":{"Limburg":{"cases":3}},"_id":"gUc61sgzsQH7aMuw"}
