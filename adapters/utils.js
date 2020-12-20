@@ -42,8 +42,23 @@ function getDatesBetween(date1, date2) {
     return dates;
 }
 
+function dataFormatter(dataJSON) {
+    const result = []
+    for (const date in dataJSON) {
+        result.push(
+            {
+                date: date,
+                cases: dataJSON[date].cases,
+                provinces: dataJSON[date].provinces
+            }
+        );
+    }
+    return result;
+}
+
 // Export functions
 module.exports = {
     getDate,
-    getDatesBetween
+    getDatesBetween,
+    dataFormatter
 }

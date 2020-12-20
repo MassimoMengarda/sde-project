@@ -1,33 +1,21 @@
 // https://github.com/louischatriot/nedb
 const NeDB = require('nedb');
 
+function createDatabase(name) {
+    databases[name] = new NeDB({ filename: './database/' + name + '.db' });
+    databases[name].loadDatabase();
+    databases[name].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
+        if (err) {
+            console.log('Error while creating "date" index in ' + name + ' database');
+        }
+    });
+}
+
 // Create/load databases and create/load indexes on field date
 const databases = {};
-
-
-databases['belgium'] = new NeDB({ filename: './database/belgium.db' });
-databases['belgium'].loadDatabase();
-// databases['belgium'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
-//     if (err) {
-//         console.log('Error while creating "date" index in belgium database');
-//     }
-// });
-
-databases['italy'] = new NeDB({ filename: './database/italy.db' });
-databases['italy'].loadDatabase();
-// databases['italy'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
-//     if (err) {
-//         console.log('Error while creating "date" index in italy database');
-//     }
-// });
-
-databases['uk'] = new NeDB({ filename: './database/uk.db' });
-databases['uk'].loadDatabase();
-// databases['uk'].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
-//     if (err) {
-//         console.log('Error while creating "date" index in uk database');
-//     }
-// });
+createDatabase('belgium');
+createDatabase('italy');
+createDatabase('uk');
 
 const select = (req, res) => {
     const country = req.params.country;
@@ -67,12 +55,11 @@ const insert = (req, res) => {
 };
 
 function insertNewData(db, data) {
-    for (const key in data) {
-        const entry = {};
-        entry[key] = data[key];
+    for (const entry of data) {
         db.insert(entry, (err) => {
             if (err) {
-                console.log(err);
+                // Just skip, if we can have the violation of unique constraint on date
+                // console.log(err);
             }
         });
     }

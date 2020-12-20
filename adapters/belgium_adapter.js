@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const utils = require('./utils');
 
 const BASE_URL = 'https://epistat.sciensano.be/Data/COVID19BE_CASES_MUNI.json';
 
@@ -29,7 +30,7 @@ const getData = async (req, res) => {
 // Function to filter the retrieved data.
 // As result is returns a json with date as main objects.
 function filter(data) {
-    const result = {};
+    const resultBuilder = {};
 
     // Filter only data, province and cases.
     for (const elem of data) {
@@ -40,11 +41,11 @@ function filter(data) {
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
             province = province.replace(/\./g, '');
-            if (result[date] === undefined) {
-                result[date] = {provinces : {}, cases: 0};
+            if (resultBuilder[date] === undefined) {
+                resultBuilder[date] = {provinces : {}, cases: 0};
             }
-            if (result[date].provinces[province] === undefined) {
-                result[date].provinces[province] = {cases: 0};
+            if (resultBuilder[date].provinces[province] === undefined) {
+                resultBuilder[date].provinces[province] = {cases: 0};
             }
             // Cases can contain <5 string, randomize the data from 0 to 5.
             if (cases === '<5') {
@@ -52,10 +53,11 @@ function filter(data) {
             } else {
                 cases = parseInt(cases);
             }
-            result[date].provinces[province].cases += cases;
-            result[date].cases += cases;
+            resultBuilder[date].provinces[province].cases += cases;
+            resultBuilder[date].cases += cases;
         }
     }
+    const result = utils.dataFormatter(resultBuilder);
     return result;
 }
 

@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const utils = require('./utils');
 
 // areaType is region, but it could be utla (too detailed)
 const BASE_URL = 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=region&structure' + 
@@ -31,7 +32,7 @@ const getData = async (req, res) => {
 // Function to retrieve and filter the data.
 // As result it returns a json with date as main objects.
 async function filter(pages) {
-    const result = {};
+    const resultBuilder = {};
 
     // Fetch all the pages.
     for (let i = 1; i <= pages; i++) {
@@ -54,15 +55,16 @@ async function filter(pages) {
             if (date !== undefined && province !== undefined && cases !== undefined) {
                 province = province.replace(/\./g, '');
                 cases = parseInt(cases);
-                if (result[date] === undefined) {
-                    result[date] = {provinces : {}, cases: 0};
+                if (resultBuilder[date] === undefined) {
+                    resultBuilder[date] = {provinces : {}, cases: 0};
                 }
-                result[date].provinces[province] = {cases: cases};
-                result[date].cases += cases;
+                resultBuilder[date].provinces[province] = {cases: cases};
+                resultBuilder[date].cases += cases;
             }
         }
     }
     
+    const result = utils.dataFormatter(resultBuilder);
     return result;
 }
 

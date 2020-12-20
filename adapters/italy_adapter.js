@@ -49,7 +49,7 @@ const getData = async (req, res) => {
 // Function to filter the retrieved data.
 // As result is returns a json with date as main objects.
 function filter(data) {
-    const result = {};
+    const resultBuilder = {};
 
     // Skip the header.
     data.shift();
@@ -65,13 +65,15 @@ function filter(data) {
             province = province.replace(/\./g, '');
             cases = parseInt(cases);
 
-            if (result[date] === undefined) {
-                result[date] = {provinces : {}, cases: 0};
+            if (resultBuilder[date] === undefined) {
+                resultBuilder[date] = {provinces : {}, cases: 0};
             }
-            result[date].provinces[province] = {cases: cases};
-            result[date].cases += cases;
+            resultBuilder[date].provinces[province] = {cases: cases};
+            resultBuilder[date].cases += cases;
         }
     }
+
+    const result = utils.dataFormatter(resultBuilder);
     return result;
 }
 
