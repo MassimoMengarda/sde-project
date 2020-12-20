@@ -10,26 +10,23 @@ function getDate(date) {
     return date.substring(0, 10);
 }
 
-// Get range of dates between date1 and date2.
-function getDatesBetween(date1, date2) {
-    date1 = getDate(date1);
-    date2 = getDate(date2);
+// Get range of dates between initialDate and finalDate.
+// initialDate should be smaller than finalDate
+function getDatesBetween(initialDate, finalDate) {
+    initialDate = getDate(initialDate);
+    finalDate = getDate(finalDate);
     
     // Return empty list if dates are not well-formed.
-    if (date1 === undefined || date2 === undefined) {
+    if (initialDate === undefined || finalDate === undefined) {
         return [];
     }
     
     // If they are the same date, there is only 1 day between them.
-    if (date1 === date2) {
-        return [date1];
+    if (initialDate === finalDate) {
+        return [initialDate];
     }
 
     const dates = [];
-
-    // Order dates.
-    const initialDate = date1 <= date2 ? date1 : date2;
-    const finalDate = date1 > date2 ? date1 : date2;
 
     // Generate dates.
     let tmpDate = new Date(initialDate);
@@ -42,6 +39,8 @@ function getDatesBetween(date1, date2) {
     return dates;
 }
 
+// Convert the data from big json to list of smaller json
+// This has been done for db compatibility
 function dataFormatter(dataJSON) {
     const result = []
     for (const date in dataJSON) {

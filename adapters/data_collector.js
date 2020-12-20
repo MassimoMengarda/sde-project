@@ -13,18 +13,18 @@ const getAllData = async (req, res) => {
     const italyData = await fetchEndPoint('italy');
     const ukData = await fetchEndPoint('uk');
     
-    // TODO process -> wikipedia and database.
     const result = {
         belgium: belgiumData,
         italy: italyData,
         uk: ukData
     }
 
-    // Send the data to the client wih response code 200.
+    // Send the data to the client with response code 200.
     res.status(200);
     res.send(result);
 }
 
+// Function that handles the endpoint's calls 
 const getDataByPeriod = async (req, res) => {
     const date1 = utils.getDate(req.query.date1);
     const date2 = utils.getDate(req.query.date2);
@@ -35,19 +35,18 @@ const getDataByPeriod = async (req, res) => {
         return;
     }
 
-    // Get dates between data1 and date2.
-    const dates = utils.getDatesBetween(date1, date2);
+    // Order dates.
+    const initialDate = date1 <= date2 ? date1 : date2;
+    const finalDate = date1 > date2 ? date1 : date2;
 
     // Check if data ranges is valid.
-    // TODO check must be done before in order to avoid dos.
-    const firstDate = new Date(dates[0]);
-    const lastDate = new Date(dates[dates.length - 1]);
-    if (firstDate < new Date('2020-01-01') || lastDate >= new Date()) {
+    if (new Date(initialDate) < new Date('2020-01-01') || new Date(finalDate) >= new Date()) {
         res.status(400);
         res.send('Input dates are not valid (cannot select data before year 2020');
         return;
     } 
     
+    // Prepare results.
     const result = {
         belgium: {},
         italy: {},
@@ -55,9 +54,9 @@ const getDataByPeriod = async (req, res) => {
     };
 
     // Get the data by dates.
-    result.belgium = await getDataByDates('belgium', dates);
-    result.italy = await getDataByDates('italy', dates);
-    result.uk = await getDataByDates('uk', dates);
+    result.belgium = await getDataByDates('belgium', initialDate, finalDate);
+    result.italy = await getDataByDates('italy', initialDate, finalDate);
+    result.uk = await getDataByDates('uk', initialDate, finalDate);
 
     // Send the data to the client wih response code 200.
     res.status(200);
@@ -65,18 +64,28 @@ const getDataByPeriod = async (req, res) => {
 }
 
 // Function that retieves region data by dates.
-async function getDataByDates(endPoint, dates) {
-    const result = {}
-    // TODO check if data is present in database for region
-    if (false) {
-        // TODO retrieve from database
+async function getDataByDates(endPoint, initialDate, finalDate) {
+    // If final date is present I can assume all the dates before that are present too.
+    const inDB = await isInDB(endPoint, finalDate);
+    if (inDB) {
+        const query = BASE_URL + 'db/' + endPoint + '?date1=' + initialDate + '&date2=' + finalDate;
+        const dbEntries = await fetch(query).then(fetch_res => {
+            return fetch_res.json();
+        });
+        return dbEntries;
     } else {
+        // Get dates between initialDate and finalDate.
+        const dates = utils.getDatesBetween(initialDate, finalDate);
         const endPointData = await fetchEndPoint(endPoint);
-        for (const date of dates) {
-            result[date] = endPointData.result[date];
+        
+        const result = [];
+        for (const entry of endPointData.result) {
+            if (dates.includes(entry.data)) {
+                result.push([date]);
+            }
         }
+        return result;
     }
-    return result;
 }
 
 // Function that given the name of an endpoint, it fetches and returns the data.
@@ -85,14 +94,28 @@ async function fetchEndPoint(endPoint) {
         return fetch_res.json();
     });
 
+    // Post data on database adapter.
     console.log('Updating db for endpoint ' + endPoint);
     await fetch(BASE_URL + 'db/' + endPoint, {
         method: 'post',
         body:    JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' }
     });
+    console.log('Done updating');
 
     return data;
+}
+
+// Function to check if a date is present as record in a db of a given endpoint.
+async function isInDB(endPoint, date) {
+    const query = BASE_URL + 'db/' + endPoint + '?date1=' + date;
+    const result = await fetch(query).then(fetch_res => {
+        return fetch_res.json();
+    }).then(resJSON => {
+        // If length == 0 it is not present.
+        return resJSON.result.length !== 0
+    });
+    return result;
 }
 
 // Export the function to register the endpoint.
