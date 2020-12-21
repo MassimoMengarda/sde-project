@@ -1,35 +1,36 @@
 // https://github.com/louischatriot/nedb
 const NeDB = require('nedb');
 const utils = require('../utils/utils');
-
-// Function that creates, load and setup the databases given a name,
-function createDatabase(name) {
-    databases[name] = new NeDB({ filename: './database/' + name + '.db' });
-    databases[name].loadDatabase();
-    databases[name].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
-        if (err) {
-            console.log('Error while creating "date" index in ' + name + ' database');
-        }
-    });
-}
+const regions = require('../utils/regions');
 
 // Create/load databases and create/load indexes on field date.
 const databases = {};
-createDatabase('belgium');
-createDatabase('italy');
-createDatabase('uk');
+createDatabases();
+
+// Function that creates, load and setup all the databases
+function createDatabases() {
+    for (const region of regions.getRegions()) {
+        databases[region] = new NeDB({ filename: './database/' + region + '.db' });
+        databases[region].loadDatabase();
+        databases[region].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
+            if (err) {
+                console.log('Error while creating "date" index in ' + region + ' database');
+            }
+        });
+    }
+}
 
 // Function that returns a list of entries whether present in the db.
 const select = async (req, res) => {
-    const country = req.params.country;
+    const region = req.params.region;
     
     const date1 = utils.getDate(req.query.date1);
     const date2 = req.query.date2 === undefined ? date1 : utils.getDate(req.query.date2);
 
     // Check if a db exists.
-    if (!databases.hasOwnProperty(country)) {
+    if (!regions.isValidRegion(region)) {
         res.status(400);
-        res.send('Country ' + country + ' not expected');
+        res.send('Region ' + region + ' not expected');
         return;
     }
 
@@ -51,7 +52,7 @@ const select = async (req, res) => {
     for (const date of dates) {
         // This is a unique date.
         const entry = await new Promise((resolve, reject) => {
-            databases[country].findOne({date: date}, (err, entry) => {
+            databases[region].findOne({date: date}, (err, entry) => {
                 if (err) {
                     reject(err);
                 }
@@ -68,13 +69,13 @@ const select = async (req, res) => {
 
 // Function that inserts new data in the db, it is called by the endpoint.
 const insert = (req, res) => {
-    const country = req.params.country;
+    const region = req.params.region;
     const data = req.body.result;
 
-    // Check if the country is supported.
-    if (!databases.hasOwnProperty(country)) {
+    // Check if the region is supported.
+    if (!regions.isValidRegion(region)) {
         res.status(400);
-        res.send('Country ' + country + ' not expected');
+        res.send('Region ' + region + ' not expected');
         return;
     }
 
@@ -86,7 +87,7 @@ const insert = (req, res) => {
     }
 
     // Insert new records if not already present.
-    insertNewData(databases[country], data);
+    insertNewData(databases[region], data);
 
     // Send response code 200.
     res.sendStatus(200);
@@ -106,6 +107,6 @@ function insertNewData(db, data) {
 
 // Export the function to register the endpoint.
 exports.register = (app) => {
-    app.get('/db/:country', select);
-    app.post('/db/:country', insert);
+    app.get('/db/:region', select);
+    app.post('/db/:region', insert);
 };

@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const utils = require('../utils/utils');
+const regions = require('../utils/regions');
 
 // TODO set in a config file.
 const BASE_URL = 'http://localhost:8080/';
@@ -9,14 +10,9 @@ const getAllData = async (req, res) => {
     console.log('Fetching all the endpoints')
 
     // Fetch the endpoints.
-    const belgiumData = await fetchEndPoint('belgium');
-    const italyData = await fetchEndPoint('italy');
-    const ukData = await fetchEndPoint('uk');
-    
-    const result = {
-        belgium: belgiumData,
-        italy: italyData,
-        uk: ukData
+    const result = {}
+    for (const region of regions.getRegions()) {
+        result[region] = await fetchEndPoint(region);
     }
 
     // Send the data to the client with response code 200.
@@ -47,16 +43,10 @@ const getDataByPeriod = async (req, res) => {
     } 
     
     // Prepare results.
-    const result = {
-        belgium: {},
-        italy: {},
-        uk: {}
-    };
-
-    // Get the data by dates.
-    result.belgium = await getDataByDates('belgium', initialDate, finalDate);
-    result.italy = await getDataByDates('italy', initialDate, finalDate);
-    result.uk = await getDataByDates('uk', initialDate, finalDate);
+    const result = {};
+    for (const region of regions.getRegions()) {
+        result[region] = await getDataByDates(region, initialDate, finalDate);
+    }
 
     // Send the data to the client wih response code 200.
     res.status(200);
