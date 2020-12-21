@@ -21,6 +21,7 @@ require('./adapters/database_adapter').register(app);
 // require('./adapters/wikipedia_adapter').register(app); // TODO remove
 
 require('./business_logics/regions_mapper').register(app);
+require('./business_logics/dates_mapper').register(app);
 
 // Start server.
 app.listen(PORT, () => console.log('App listening on port ' + PORT));
