@@ -62,7 +62,7 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
         const dbEntries = await fetch(query).then(fetch_res => {
             return fetch_res.json();
         });
-        return dbEntries;
+        return dbEntries.result;
     } else {
         // Get dates between initialDate and finalDate.
         const dates = utils.getDatesBetween(initialDate, finalDate);
@@ -70,8 +70,8 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
         
         const result = [];
         for (const entry of endPointData.result) {
-            if (dates.includes(entry.data)) {
-                result.push([date]);
+            if (dates.includes(entry.date)) {
+                result.push(entry);
             }
         }
         return result;

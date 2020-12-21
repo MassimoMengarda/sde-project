@@ -10,11 +10,11 @@ createDatabases();
 // Function that creates, load and setup all the databases
 function createDatabases() {
     for (const region of regions.getRegions()) {
-        databases[region] = new NeDB({ filename: './database/' + region + '.db' });
-        databases[region].loadDatabase();
-        databases[region].ensureIndex({ fieldName: 'date', unique: true }, function (err) {
+        databases[region] = new NeDB({ filename: './databases/' + region + '.db' });
+        databases[region].ensureIndex({ fieldName: 'date', unique: true });
+        databases[region].loadDatabase((err) => {
             if (err) {
-                console.log('Error while creating "date" index in ' + region + ' database');
+                console.log(err);
             }
         });
     }
@@ -59,8 +59,11 @@ const select = async (req, res) => {
                 resolve(entry); 
             });
         });
-        result.push(entry);
+        if (entry !== undefined && entry !== null) {
+            result.push(entry);
+        }
     }
+    
 
     // Send data and response code 200.
     res.status(200);
