@@ -1,6 +1,6 @@
 // https://github.com/louischatriot/nedb
 const NeDB = require('nedb');
-const utils = require('./utils');
+const utils = require('../utils/utils');
 
 // Function that creates, load and setup the databases given a name,
 function createDatabase(name) {

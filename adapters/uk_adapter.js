@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const utils = require('./utils');
+const utils = require('../utils/utils');
 
 // areaType is region, but it could be utla (too detailed)
 const BASE_URL = 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=region&structure' + 

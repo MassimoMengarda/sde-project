@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const utils = require('./utils');
+const utils = require('../utils/utils');
 
 // TODO set in a config file.
 const BASE_URL = 'http://localhost:8080/';
