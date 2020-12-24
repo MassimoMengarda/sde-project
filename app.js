@@ -23,5 +23,7 @@ require('./adapters/database_adapter').register(app);
 require('./business_logics/regions_mapper').register(app);
 require('./business_logics/dates_mapper').register(app);
 
+require('./processes/map_visualizer').register(app);
+
 // Start server.
 app.listen(PORT, () => console.log('App listening on port ' + PORT));
