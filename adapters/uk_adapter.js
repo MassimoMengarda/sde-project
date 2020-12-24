@@ -53,7 +53,7 @@ async function filter(pages) {
 
             // Skip the rows that are not well defined.
             if (date !== undefined && province !== undefined && cases !== undefined) {
-                province = province.replace(/\./g, '');
+                province = province.replace(/\./g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, "");
                 cases = parseInt(cases);
                 if (resultBuilder[date] === undefined) {
                     resultBuilder[date] = {provinces : {}, cases: 0};
