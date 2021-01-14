@@ -1,3 +1,6 @@
+// Address and port of the application.
+const BASE_URL = 'http://localhost:8080/';
+
 // Get formatted date as string.
 function getDate(date) {
     // e.g. 2020-12-10T15:30:00, take only date.
@@ -57,6 +60,7 @@ function dataFormatter(dataJSON) {
 
 // Export functions
 module.exports = {
+    BASE_URL,
     getDate,
     getDatesBetween,
     dataFormatter

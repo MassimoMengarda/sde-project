@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 
 const PORT = 8080;
 const app = express();
+
 app.use(bodyParser.json({limit: '100mb', extended: true}));
 app.use(express.json());
 
@@ -18,7 +19,7 @@ require('./adapters/mapquest_adapter').register(app);
 require('./adapters/data_collector').register(app);
 require('./adapters/database_adapter').register(app);
 
-// require('./adapters/wikipedia_adapter').register(app); // TODO remove
+// require('./adapters/wikipedia_adapter').register(app); // TODO modify, retrieve population
 
 require('./business_logics/regions_mapper').register(app);
 require('./business_logics/dates_mapper').register(app);

@@ -10,7 +10,7 @@ createDatabases();
 // Function that creates, load and setup all the databases
 function createDatabases() {
     for (const region of regions.getRegions()) {
-        databases[region] = new NeDB({ filename: './databases/' + region + '.db' });
+        databases[region] = new NeDB({ filename: './backend/databases/' + region + '.db' });
         databases[region].ensureIndex({ fieldName: 'date', unique: true });
         databases[region].loadDatabase((err) => {
             if (err) {
@@ -110,6 +110,6 @@ function insertNewData(db, data) {
 
 // Export the function to register the endpoint.
 exports.register = (app) => {
-    app.get('/db/:region', select);
-    app.post('/db/:region', insert);
+    app.get('/db/:region?', select);
+    app.post('/db/:region?', insert);
 };
