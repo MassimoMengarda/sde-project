@@ -1,0 +1,24 @@
+<div class="center">
+  <h3>Latest available data by country</h3>
+  <button mat-raised-button (click)="setCurrentCountry('IT')" [disabled]="currentCountry==='IT'">
+    <img src="/assets/italyFlag.png" alt="Italy" height="30"/>
+    Italy<br>
+    XXX cases
+  </button>
+  <button mat-raised-button (click)="setCurrentCountry('BG')" [disabled]="currentCountry==='BG'">
+    <img src="/assets/belgiumFlag.png" alt="Belgium" height="30"/>
+    Belgium<br>
+    XXX cases
+  </button>
+  <button mat-raised-button (click)="setCurrentCountry('UK')" [disabled]="currentCountry==='UK'">
+    <img src="/assets/ukFlag.png" alt="UK" height="30"/>
+    United Kingdom<br>
+    XXX cases
+  </button>
+  <!-- <button mat-raised-button color="primary">Primary</button>
+  <button mat-raised-button color="accent">Accent</button>
+  <button mat-raised-button color="warn">Warn</button>
+  <button mat-raised-button disabled>Disabled</button> -->
+  <!-- <a mat-raised-button href="https://www.google.com/" target="_blank">Link</a> -->
+</div>
+<app-country-details [country]='currentCountry'></app-country-details>
