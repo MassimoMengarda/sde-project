@@ -1,20 +1,70 @@
 // https://github.com/louischatriot/nedb
 const NeDB = require('nedb');
+const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 const regions = require('../utils/regions');
 
-// Create/load databases and create/load indexes on field date.
-const databases = {};
-createDatabases();
+// Create/load databases and create/load indexes.
+const databases = loadDatabases();
+const regionsDB = createRegionsDatabase(); 
 
-// Function that creates, load and setup all the databases
-function createDatabases() {
+// Function that loads and sets up all the databases.
+function loadDatabases() {
+    const databases = {};
+    
+    console.log('Loading databases');
     for (const region of regions.getRegions()) {
         databases[region] = new NeDB({ filename: './backend/databases/' + region + '.db' });
         databases[region].ensureIndex({ fieldName: 'date', unique: true });
         databases[region].loadDatabase((err) => {
             if (err) {
                 console.log(err);
+            }
+        });
+    }
+    
+    console.log('Done loading databases\n');
+    return databases;
+}
+
+// Function that creates the regions database.
+function createRegionsDatabase() {
+    console.log('Loading regions database');
+
+    const database = new NeDB({ filename: './backend/databases/regions.db' });
+    database.ensureIndex({ fieldName: 'region', unique: true });
+    database.loadDatabase((err) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+
+    // Insert in the database the regions.
+    populateRegionsDatabase(database);
+
+    console.log('Done loading regions database\n');
+    return database;
+}
+
+// Function to populate the regionDB with information about the regions.
+function populateRegionsDatabase(database) {
+    let counter = 0;
+    for (const region of regions.getRegions()) {
+        database.findOne({region: region}, (err, entry) => {
+            // Add information only if it is not present.
+            if (entry === undefined || entry === null) {
+    
+                // Wait due to the rate limit of 1 request per second.
+                setTimeout(() => {
+                    console.log('Updating regions database for ' + region);
+                    fetch(utils.BASE_URL + 'get-region-info/' + region).then(resFetch => {
+                        return resFetch.json();
+                    }).then(result => {
+                        insertNewData(database, [result]);
+                    });
+                }, 2000 * counter);
+
+                counter += 1;
             }
         });
     }
@@ -70,6 +120,32 @@ const select = async (req, res) => {
     res.send({result: result});
 }
 
+// Function that returns the information about the requested region.
+const getRegionInfo = async (req, res) => {
+    const region = req.params.region;
+
+    // Check if it is a valid region.
+    if (!regions.isValidRegion(region)) {
+        res.status(400);
+        res.send('Region ' + region + ' not expected');
+        return;
+    }
+
+    // Get the information in the DB.
+    const entry = await new Promise((resolve, reject) => {
+        regionsDB.findOne({region: region}, (err, entry) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(entry); 
+        });
+    });
+    
+    // Send data and response code 200.
+    res.status(200);
+    res.send(entry);
+}
+
 // Function that inserts new data in the db, it is called by the endpoint.
 const insert = (req, res) => {
     const region = req.params.region;
@@ -94,7 +170,7 @@ const insert = (req, res) => {
 
     // Send response code 200.
     res.sendStatus(200);
-};
+}
 
 // Function that inserts data in a database.
 function insertNewData(db, data) {
@@ -112,4 +188,5 @@ function insertNewData(db, data) {
 exports.register = (app) => {
     app.get('/db/:region?', select);
     app.post('/db/:region?', insert);
+    app.get('/db-info/:region?', getRegionInfo);
 };

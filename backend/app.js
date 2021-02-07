@@ -18,8 +18,8 @@ require('./adapters/uk_adapter').register(app);
 require('./adapters/mapquest_adapter').register(app);
 require('./adapters/data_collector').register(app);
 require('./adapters/database_adapter').register(app);
+require('./adapters/information_adapter').register(app);
 
-// require('./adapters/wikipedia_adapter').register(app); // TODO modify, retrieve population
 
 require('./business_logics/regions_mapper').register(app);
 require('./business_logics/dates_mapper').register(app);

@@ -1,13 +1,14 @@
 const fetch = require('node-fetch');
+const utils = require('../utils/utils');
 const regions = require('../utils/regions');
 
 const BASE_URL = 'https://www.mapquestapi.com/staticmap/v5/map?';
-const KEY = 'key=msjfZTaaaRwasQi8K3jplvGnZBUvPFA0';
+const KEY = 'key=msjfZTaaaRwasQi8K3jplvGnZBUvPFA0'; // Move to a better file.
 const MAPS_SIZE = 'size=@2x';
 
 // Function that retrieves the map of region indicated in URL.
 const getMap = async (req, res) => {
-    // Get the region and location params
+    // Get the region and location params.
     const region = req.params.region;
     const input = req.query.data;
 
@@ -29,29 +30,24 @@ const getMap = async (req, res) => {
         return;
     }
 
-    const mapRegion = getMapRegion(region);
-    if (mapRegion === undefined) {
-        res.status(400);
-        res.send('Region ' + region + ' is unexpected');
-        return;
-    }
-    
-    const mapLocations = getMapLocations(locations, region);
+    // Retrieve the fields to pass to the mapquest API.
+    const regionInfo = await getRegionInfo(region);
+    const mapLocations = getMapLocations(locations, regionInfo);
     console.log('Starting fetching Map Quest API...');
     
-    // Fetch the data in the html page, concatenating the URL
+    // Fetch the data in the html page, concatenating the URL.
     const query = BASE_URL +
                 KEY + '&' +
                 MAPS_SIZE + '&' +
-                mapRegion.zoom + '&' + 
-                mapRegion.center + mapLocations;
+                regionInfo.zoom + '&' + 
+                regionInfo.center + mapLocations;
     const data = await fetch(query).then((fetch_res) => {
-        // .buffer() because we receive an image from fetch function
+        // .buffer() because we receive an image from fetch function.
         return fetch_res.buffer();
     });
 
     // Set the right content type (without this, the map image is downloaded)
-    // and send the data to the client
+    // and send the data to the client.
     console.log('Sending data...');
     res.set('Content-Type', 'image/png');
     res.status(200);
@@ -60,36 +56,47 @@ const getMap = async (req, res) => {
 };
 
 
-// Function to adapt the image to coordinates of the center
-// of the map and zoom value for the region concerned
-function getMapRegion(region) {
-    const result = {};
+// Function to retrieve all the necessary information of a region.
+async function getRegionInfo(region) {
+    const regionInfo = await fetch(utils.BASE_URL + 'db-info/' + region).then(fetch_res => {
+        return fetch_res.json();
+    });
 
-    // TODO scalable, move to regions utils?
-    if (region === 'italy') {
-        result.center = 'center=42.43169019179292,13.122537387489809';
-        result.zoom = 'zoom=5';
-    } else if (region === 'uk') {
-        result.center = 'center=54.56400960664871,-2.179826941380527';
-        result.zoom = 'zoom=5';
-    } else if (region === 'belgium') {
-        result.center = 'center=50.694457836779684,4.657968959260875';
-        result.zoom = 'zoom=7';
+    const result = {
+        'region' : regionInfo.region,
+        'center' : 'center=' + regionInfo.coordinates,
+        'zoom' : 'zoom=' + getRegionZoom(regionInfo.area),
+        'population' : regionInfo.population
     }
 
     return result;
 }
 
+// Function to compute the zoom of a region for the mapquest API.
+function getRegionZoom(area) {
+    const maxSize = 1000000;
+    const minSize = 1000;
+
+    const minScale = 1;
+    const maxScale = 8;
+
+    const scalingParam = 1 - ((area - minSize) / (maxSize - minSize));
+
+    const result = Math.floor(minScale + (maxScale - minScale) * scalingParam);
+
+    return Math.max(result, 1);
+}
+
 // Function to build the URL to query MapQuest.
-// Each location is represented by circle and
-// gathered in a list.
-function getMapLocations(locations, region) {
+// Each location is represented by circle and gathered in a list.
+function getMapLocations(locations, regionInfo) {
     const result = [];
+    const scalingParam = 250000;
 
     for (const entry of locations) {
         const location = entry[0];
-        const radius = entry[1] / regions.getRegionScaleFactor(region);
-        result.push('&shape=border:ff0000ff|fill:ff000099|radius:' + radius + '|' + location + ',' + region);
+        const radius = entry[1] / (regionInfo.population / scalingParam);
+        result.push('&shape=border:ff0000ff|fill:ff000099|radius:' + radius + '|' + location + ',' + regionInfo.region);
     }
 
     return result;
