@@ -21,6 +21,7 @@ const handleDataRequest = async (req, res) => {
         return;
     }
 
+    console.log(`[REGIONS MAPPER] - Request for region ${region} and date ${date}`);
     await handleDataResponse(res, region, date);
 }
 
@@ -42,6 +43,7 @@ async function handleDataResponse(res, region, date) {
 
     res.status(200);
     res.send(result);
+    console.log(`[REGIONS MAPPER] - Done\n`);
 }
 
 exports.register = app => {

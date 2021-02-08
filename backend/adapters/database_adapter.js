@@ -12,7 +12,7 @@ const regionsDB = createRegionsDatabase();
 function loadDatabases() {
     const databases = {};
     
-    console.log('Loading databases');
+    console.log(`[DATABASE ADAPTER] - Loading databases`);
     for (const region of regions.getRegions()) {
         databases[region] = new NeDB({ filename: './backend/databases/' + region + '.db' });
         databases[region].ensureIndex({ fieldName: 'date', unique: true });
@@ -23,13 +23,13 @@ function loadDatabases() {
         });
     }
     
-    console.log('Done loading databases\n');
+    console.log(`[DATABASE ADAPTER] - Done loading databases\n`);
     return databases;
 }
 
 // Function that creates the regions database.
 function createRegionsDatabase() {
-    console.log('Loading regions database');
+    console.log(`[DATABASE ADAPTER] - Loading regions database`);
 
     const database = new NeDB({ filename: './backend/databases/regions.db' });
     database.ensureIndex({ fieldName: 'region', unique: true });
@@ -63,7 +63,7 @@ function populateRegionsDatabase(database) {
 
 // Function to fetch information about a region and insert it in the database.
 function addRegionInfo(database, region) {
-    console.log('Updating regions database for ' + region);
+    console.log(`[DATABASE ADAPTER] - Updating regions database for ` + region);
 
     fetch(utils.BASE_URL + 'get-region-info/' + region).then(resFetch => {
         return resFetch.json();
@@ -93,6 +93,7 @@ const handleSelectRequest = async (req, res) => {
         return;
     }
 
+    console.log(`[DATABASE ADAPTER] - Select request for region ${region} and dates ${date1} ${date2}`);
     await handleSelectResponse(res, region, date1, date2);
 }
 
@@ -124,6 +125,7 @@ async function handleSelectResponse(res, region, date1, date2) {
     // Send data and response code 200.
     res.status(200);
     res.send({result: result});
+    console.log(`[DATABASE ADAPTER] - Done\n`);
 }
 
 // Function to handle the insert requests to the database.
@@ -145,6 +147,7 @@ const handleInsertRequest = async (req, res) => {
         return;
     }
 
+    console.log(`[DATABASE ADAPTER] - Insert request for region ${region}`);
     await handleInsertResponse(res, region, data);
 }
 
@@ -155,6 +158,7 @@ async function handleInsertResponse(res, region, data) {
 
     // Send response code 200.
     res.sendStatus(200);
+    console.log(`[DATABASE ADAPTER] - Done\n`);
 }
 
 // Function to handle the requests of information about a region.
@@ -168,6 +172,7 @@ const handleRegionInfoRequest = async (req, res) => {
         return;
     }
 
+    console.log(`[DATABASE ADAPTER] - Region info request for region ${region}`);
     await handleRegionInfoResponse(res, region);
 }
 
@@ -186,6 +191,7 @@ async function handleRegionInfoResponse(res, region) {
     // Send data and response code 200.
     res.status(200);
     res.send(entry);
+    console.log(`[DATABASE ADAPTER] - Done\n`);
 }
 
 // Function that inserts data in a database.

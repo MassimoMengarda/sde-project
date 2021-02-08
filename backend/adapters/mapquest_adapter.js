@@ -18,6 +18,7 @@ const handleMapRequest = async (req, res) => {
         return;
     }
 
+    console.log(`[MAPQUEST ADAPTER] - Map request for region ${region}`);
     await handleMapResponse(res, region, input);
 }
 
@@ -37,7 +38,7 @@ async function handleMapResponse(res, region, input) {
     // Retrieve the fields to pass to the mapquest API.
     const regionInfo = await getRegionInfo(region);
     const mapLocations = getMapLocations(locations, regionInfo);
-    console.log('Starting fetching Map Quest API...');
+    console.log(`[MAPQUEST ADAPTER] - Fetching Map Quest API`);
     
     // Fetch the data in the html page, concatenating the URL.
     const query = BASE_URL +
@@ -52,11 +53,10 @@ async function handleMapResponse(res, region, input) {
 
     // Set the right content type (without this, the map image is downloaded)
     // and send the data to the client.
-    console.log('Sending data...');
     res.set('Content-Type', 'image/png');
     res.status(200);
     res.send(data);
-    console.log('Done!\n');
+    console.log(`[MAPQUEST ADAPTER] - Done\n`);
 };
 
 // Function to retrieve all the necessary information of a region.

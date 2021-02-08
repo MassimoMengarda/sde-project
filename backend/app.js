@@ -27,4 +27,4 @@ require('./business_logics/dates_mapper').register(app);
 require('./processes/map_visualizer').register(app);
 
 // Start server.
-app.listen(PORT, () => console.log('App listening on port ' + PORT));
+app.listen(PORT, () => console.log(`App listening on port ${PORT}`));

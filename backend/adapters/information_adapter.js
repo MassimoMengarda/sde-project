@@ -15,7 +15,8 @@ const handleRegionInfoRequest = async (req, res) => {
         res.send('Region ' + region + ' not expected');
         return;
     }
-
+    
+    console.log(`[INFORMATION ADAPTER] - Request for region ${region}`);
     await handleRegionInfoResponse(res, region);
 }
 
@@ -35,6 +36,7 @@ async function handleRegionInfoResponse(res, region) {
 
     res.status(200);
     res.send(result);
+    console.log(`[INFORMATION ADAPTER] - Done\n`);
 }
 
 // Function to retrieve the coordinates of a given region.
@@ -50,7 +52,7 @@ async function getCoordinates(region) {
         const coords = resJSON.query.pages[pageChild].coordinates[coordinatesChild];
         return coords.lat + ',' + coords.lon;
     }).catch(() => {
-        console.log('Wikipedia fetch error: Location ' + region + ' not found');
+        console.log(`[INFORMATION ADAPTER] - Wikipedia fetch error: Location ${region} not found`);
         return undefined;
     });
 

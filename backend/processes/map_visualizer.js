@@ -21,6 +21,7 @@ const handleMapRequest = async (req, res) => {
         return;
     }
 
+    console.log(`[MAP VISUALIZER] - Map request for region ${region} and date ${date}`);
     await handleMapResponse(res, region, date);
 }
 
@@ -46,6 +47,7 @@ async function handleMapResponse(res, region, date) {
     res.set('Content-Type', 'image/png');
     res.status(200);
     res.send(map);
+    console.log(`[MAP VISUALIZER] - Done\n`);
 }
 
 // Function to format the data as location name => number of cases

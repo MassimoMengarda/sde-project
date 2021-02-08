@@ -9,15 +9,16 @@ const handleDataRequest = async (req, res) => {
 
     // Check whether we need to get all the data or only by period.
     if (date1 === undefined || date2 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
+        console.log(`[DATA COLLECTOR] - Request for all data\n`);
         await handleResponseAllData(res);
-    } else {
+    } else {console.log(`[DATA COLLECTOR] - Request for data between ${date1} and ${date2}\n`);
         await handleResponseByPeriod(res, date1, date2);
     }
 }
 
 // Function that fetches all the endpoints and process the data.
 async function handleResponseAllData(res) {
-    console.log('Fetching all the endpoints')
+    console.log(`[DATA COLLECTOR] - Fetching all the endpoints`)
 
     // Fetch the endpoints.
     const result = {}
@@ -28,6 +29,7 @@ async function handleResponseAllData(res) {
     // Send the data to the client with response code 200.
     res.status(200);
     res.send(result);
+    console.log(`[DATA COLLECTOR] - Done`);
 }
 
 async function handleResponseByPeriod(res, date1, date2) {
@@ -44,6 +46,7 @@ async function handleResponseByPeriod(res, date1, date2) {
     // Send the data to the client wih response code 200.
     res.status(200);
     res.send(result);
+    console.log(`[DATA COLLECTOR] - Done`);
 }
 
 // Function that retieves region data by dates.
@@ -78,14 +81,14 @@ async function fetchEndPoint(endPoint) {
     });
 
     // Post data on database adapter.
-    console.log('Updating db for endpoint ' + endPoint);
+    console.log(`[DATA COLLECTOR] - Updating db for endpoint ${endPoint}`);
     await fetch(utils.BASE_URL + 'db/' + endPoint, {
         method: 'post',
         body:    JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' }
     });
     
-    console.log('Done updating\n');
+    console.log(`[DATA COLLECTOR] - Done updating\n`);
     return data;
 }
 
