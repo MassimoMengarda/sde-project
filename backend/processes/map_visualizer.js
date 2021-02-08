@@ -10,14 +10,14 @@ const handleMapRequest = async (req, res) => {
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
         res.status(404);
-        res.send('No data for region ' + region);
+        res.send(`No data for region ${region}`);
         return;
     }
 
     // Check if date is well-defined and not in the future.
     if (date === undefined || !utils.isValidDate(date)) {
         res.status(400);
-        res.send(date + ' is not a valid date');
+        res.send(`${date} is not a valid date`);
         return;
     }
 
@@ -27,7 +27,7 @@ const handleMapRequest = async (req, res) => {
 
 // Function to handle the response from the map visualizer endpoint.
 async function handleMapResponse(res, region, date) {
-    const regionQuery = utils.BASE_URL + 'region-mapper/' + region + '?date=' + date;
+    const regionQuery = `${utils.BASE_URL}/region-mapper/${region}?date=${date}`;
     const provinceData = await fetch(regionQuery).then(resFetch => {
         return resFetch.json();
     }).then(JSONdata => {
@@ -37,7 +37,7 @@ async function handleMapResponse(res, region, date) {
 
     const locations = locationsMapper(provinceData);
     
-    const imageQuery = utils.BASE_URL + 'map-image/' + region + '?data=' + locations;
+    const imageQuery = `${utils.BASE_URL}/map-image/${region}?data=${locations}`;
     const map = await fetch(imageQuery).then((resFetch) => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();

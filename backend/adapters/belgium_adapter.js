@@ -38,7 +38,7 @@ function filter(data) {
 
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
-            province = province.replace(/\./g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            province = province.replace(/\./g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             if (resultBuilder[date] === undefined) {
                 resultBuilder[date] = {provinces : {}, cases: 0};
             }

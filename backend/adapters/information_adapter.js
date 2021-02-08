@@ -12,7 +12,7 @@ const handleRegionInfoRequest = async (req, res) => {
 
     if (!regions.isValidRegion(region)) {
         res.status(400);
-        res.send('Region ' + region + ' not expected');
+        res.send(`No data for region ${region}`);
         return;
     }
     

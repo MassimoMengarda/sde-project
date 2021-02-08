@@ -1,5 +1,5 @@
 // Address and port of the application.
-const BASE_URL = 'http://localhost:8080/';
+const BASE_URL = 'http://localhost:8080';
 
 // Get formatted date as string.
 function getDate(date) {

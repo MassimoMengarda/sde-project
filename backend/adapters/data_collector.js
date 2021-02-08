@@ -54,7 +54,7 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
     // If final date is present I can assume all the dates before that are present too.
     const inDB = await isInDB(endPoint, finalDate);
     if (inDB) {
-        const query = utils.BASE_URL + 'db/' + endPoint + '?date1=' + initialDate + '&date2=' + finalDate;
+        const query = `${utils.BASE_URL}/db/${endPoint}?date1=${initialDate}&date2=${finalDate}`;
         const dbEntries = await fetch(query).then(resFetch => {
             return resFetch.json();
         });
@@ -76,13 +76,13 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
 
 // Function that given the name of an endpoint, it fetches and returns the data.
 async function fetchEndPoint(endPoint) {
-    const data = await fetch(utils.BASE_URL + endPoint).then(resFetch => {
+    const data = await fetch(`${utils.BASE_URL}/${endPoint}`).then(resFetch => {
         return resFetch.json();
     });
 
     // Post data on database adapter.
     console.log(`[DATA COLLECTOR] - Updating db for endpoint ${endPoint}`);
-    await fetch(utils.BASE_URL + 'db/' + endPoint, {
+    await fetch(`${utils.BASE_URL}/db/${endPoint}`, {
         method: 'post',
         body:    JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' }
@@ -94,7 +94,7 @@ async function fetchEndPoint(endPoint) {
 
 // Function to check if a date is present as record in a db of a given endpoint.
 async function isInDB(endPoint, date) {
-    const query = utils.BASE_URL + 'db/' + endPoint + '?date1=' + date;
+    const query = `${utils.BASE_URL}/db/${endPoint}?date1=${date}`;
     const result = await fetch(query).then(resFetch => {
         return resFetch.json();
     }).then(resJSON => {

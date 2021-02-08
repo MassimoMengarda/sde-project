@@ -41,11 +41,7 @@ async function handleMapResponse(res, region, input) {
     console.log(`[MAPQUEST ADAPTER] - Fetching Map Quest API`);
     
     // Fetch the data in the html page, concatenating the URL.
-    const query = BASE_URL +
-                KEY + '&' +
-                MAPS_SIZE + '&' +
-                regionInfo.zoom + '&' + 
-                regionInfo.center + mapLocations;
+    const query = `${BASE_URL}${KEY}&${MAPS_SIZE}&${regionInfo.zoom}&${regionInfo.center}${mapLocations}`;
     const data = await fetch(query).then(resFetch => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
@@ -61,7 +57,7 @@ async function handleMapResponse(res, region, input) {
 
 // Function to retrieve all the necessary information of a region.
 async function getRegionInfo(region) {
-    const regionInfo = await fetch(utils.BASE_URL + 'db-info/' + region).then(resFetch => {
+    const regionInfo = await fetch(`${utils.BASE_URL}/db-info/${region}`).then(resFetch => {
         return resFetch.json();
     });
 
@@ -99,7 +95,7 @@ function getMapLocations(locations, regionInfo) {
     for (const entry of locations) {
         const location = entry[0];
         const radius = entry[1] / (regionInfo.population / scalingParam);
-        result.push('&shape=border:ff0000ff|fill:ff000099|radius:' + radius + '|' + location + ',' + regionInfo.region);
+        result.push(`&shape=border:ff0000ff|fill:ff000099|radius:${radius}|${location},${regionInfo.region}`);
     }
 
     return result;

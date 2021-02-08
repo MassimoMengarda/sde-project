@@ -35,7 +35,7 @@ async function filter(pages) {
 
     // Fetch all the pages.
     for (let i = 1; i <= pages; i++) {
-        const query = BASE_URL + '&page=' + i;
+        const query = `${BASE_URL}&page=${i}`;
 
         // Fetch the i-th page and parse it to json.
         const entries = await fetch(query).then(resFetch => {
@@ -52,7 +52,7 @@ async function filter(pages) {
 
             // Skip the rows that are not well defined.
             if (date !== undefined && province !== undefined && cases !== undefined) {
-                province = province.replace(/\./g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                province = province.replace(/\./g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                 cases = parseInt(cases);
                 if (resultBuilder[date] === undefined) {
                     resultBuilder[date] = {provinces : {}, cases: 0};

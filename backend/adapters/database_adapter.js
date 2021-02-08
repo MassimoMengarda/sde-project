@@ -14,7 +14,7 @@ function loadDatabases() {
     
     console.log(`[DATABASE ADAPTER] - Loading databases`);
     for (const region of regions.getRegions()) {
-        databases[region] = new NeDB({ filename: './backend/databases/' + region + '.db' });
+        databases[region] = new NeDB({ filename: `./backend/databases/${region}.db` });
         databases[region].ensureIndex({ fieldName: 'date', unique: true });
         databases[region].loadDatabase((err) => {
             if (err) {
@@ -65,7 +65,7 @@ function populateRegionsDatabase(database) {
 function addRegionInfo(database, region) {
     console.log(`[DATABASE ADAPTER] - Updating regions database for ` + region);
 
-    fetch(utils.BASE_URL + 'get-region-info/' + region).then(resFetch => {
+    fetch(`${utils.BASE_URL}/get-region-info/${region}`).then(resFetch => {
         return resFetch.json();
     }).then(result => {
         insertNewData(database, [result]);
@@ -82,14 +82,14 @@ const handleSelectRequest = async (req, res) => {
     // Check the given region is valid.
     if (!regions.isValidRegion(region)) {
         res.status(400);
-        res.send('Region ' + region + ' not expected');
+        res.send(`No data for region ${region}`);
         return;
     }
 
     // Need at least one date.
     if (date1 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
         res.status(400);
-        res.send(date1 + 'is not a valid date');
+        res.send(`${date1} is not a valid date`);
         return;
     }
 
@@ -136,7 +136,7 @@ const handleInsertRequest = async (req, res) => {
     // Check if the region is supported.
     if (!regions.isValidRegion(region)) {
         res.status(400);
-        res.send('Region ' + region + ' not expected');
+        res.send(`No data for region ${region}`);
         return;
     }
 
@@ -168,7 +168,7 @@ const handleRegionInfoRequest = async (req, res) => {
     // Check if it is a valid region.
     if (!regions.isValidRegion(region)) {
         res.status(400);
-        res.send('Region ' + region + ' not expected');
+        res.send(`No data for region ${region}`);
         return;
     }
 

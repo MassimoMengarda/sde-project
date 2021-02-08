@@ -11,20 +11,20 @@ const handleDataRequest = async (req, res) => {
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
         res.status(404);
-        res.send('No data for region ' + region);
+        res.send(`No data for region ${region}`);
         return;
     }
 
     // Check if dates are well-defined.
     if (date1 === undefined || !utils.isValidDate(date1)) {
         res.status(400);
-        res.send(date1 + 'is not a valid date');
+        res.send(`${date1} is not a valid date`);
         return;
     }
 
     if (date2 === undefined || !utils.isValidDate(date2)) {
         res.status(400);
-        res.send(date1 + 'is not a valid date');
+        res.send(`${date2} is not a valid date`);
         return;
     }
 
@@ -34,7 +34,7 @@ const handleDataRequest = async (req, res) => {
 
 // Function to handle responses from the endpoint.
 async function handleDataResponse(res, region, date1, date2) {
-    const query = utils.BASE_URL + 'data?date1=' + date1 + '&date2=' + date2;
+    const query = `${utils.BASE_URL}/data?date1=${date1}&date2=${date2}`;
     const data = await fetch(query).then(resFetch => {
         return resFetch.json();
     });

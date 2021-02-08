@@ -61,7 +61,7 @@ function filter(data) {
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {
             // Remove points and letter accents
-            province = province.replace(/\./g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            province = province.replace(/\./g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             cases = parseInt(cases);
 
             if (resultBuilder[date] === undefined) {
