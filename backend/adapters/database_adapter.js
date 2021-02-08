@@ -62,7 +62,7 @@ function populateRegionsDatabase(database) {
                     }).then(result => {
                         insertNewData(database, [result]);
                     });
-                }, 2000 * counter);
+                }, 3000 * counter);
 
                 counter += 1;
             }
@@ -85,9 +85,9 @@ const select = async (req, res) => {
     }
 
     // Need at least one date.
-    if (date1 === undefined) {
+    if (date1 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
         res.status(400);
-        res.send('Input date expected');
+        res.send(date1 + 'is not a valid date');
         return;
     }
 

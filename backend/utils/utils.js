@@ -13,6 +13,19 @@ function getDate(date) {
     return date.substring(0, 10);
 }
 
+function isValidDate(inputDate) {
+    const dateAsString = getDate(inputDate);
+    if (dateAsString === undefined) {
+        return false;
+    }
+
+    const date = new Date(dateAsString);
+    const initialDate = new Date('2020-01-01');
+    const today = new Date();
+
+    return date >= initialDate && date <= today;
+}
+
 // Get range of dates between initialDate and finalDate.
 // initialDate should be smaller than finalDate
 function getDatesBetween(initialDate, finalDate) {
@@ -62,6 +75,7 @@ function dataFormatter(dataJSON) {
 module.exports = {
     BASE_URL,
     getDate,
+    isValidDate,
     getDatesBetween,
     dataFormatter
 }

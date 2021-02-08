@@ -6,13 +6,6 @@ const getDataByDate = async (req, res) => {
     const region = req.params.region;
     const date = utils.getDate(req.query.date);
 
-    // Check if date is well-defined.
-    if (date === undefined) {
-        res.status(400);
-        res.send('Select a valid date');
-        return;
-    }
-
     // Check if region is valid
     if (!regions.isValidRegion(region)) {
         res.status(404);
@@ -20,10 +13,17 @@ const getDataByDate = async (req, res) => {
         return;
     }
 
+    // Check if date is well-defined.
+    if (date === undefined || !utils.isValidDate(date)) {
+        res.status(400);
+        res.send(date + ' is not a valid date');
+        return;
+    }
+
     // TODO workaround, bad input parameters names
     const query = utils.BASE_URL + 'data?date1=' + date + '&date2=' + date;
-    const data = await fetch(query).then(fetch_res => {
-        return fetch_res.json();
+    const data = await fetch(query).then(resFetch => {
+        return resFetch.json();
     });
 
     let result = {};

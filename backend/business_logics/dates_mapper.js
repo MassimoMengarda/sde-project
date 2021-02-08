@@ -15,15 +15,21 @@ const getDataByRegion = async (req, res) => {
     }
 
     // Check if dates are well-defined.
-    if (date1 === undefined || date2 === undefined) {
+    if (date1 === undefined || !utils.isValidDate(date1)) {
         res.status(400);
-        res.send('Select valid dates');
+        res.send(date1 + 'is not a valid date');
+        return;
+    }
+
+    if (date2 === undefined || !utils.isValidDate(date2)) {
+        res.status(400);
+        res.send(date1 + 'is not a valid date');
         return;
     }
 
     const query = utils.BASE_URL + 'data?date1=' + date1 + '&date2=' + date2;
-    const data = await fetch(query).then(fetch_res => {
-        return fetch_res.json();
+    const data = await fetch(query).then(resFetch => {
+        return resFetch.json();
     });
 
     const result = {};

@@ -10,9 +10,9 @@ const getData = async (req, res) => {
     console.log('Starting fetching Italy dataset...');
 
     // Fetch the data in the html page.
-    const data = await fetch(BASE_URL).then(fetch_res => {
+    const data = await fetch(BASE_URL).then(resFetch => {
         // Since data is csv, we return it as string.
-        return fetch_res.text();
+        return resFetch.text();
     }).then(resCSV => {
         console.log('Done fetching\nElaborating...');
         let result = [];
@@ -56,9 +56,9 @@ function filter(data) {
 
     // Filter only data, province and cases.
     for (const elem of data) {
-        const date = utils.getDate(elem.data);
-        let province = elem.denominazione_regione;
-        let cases = elem.nuovi_positivi;
+        const date = utils.getDate(elem['data']);
+        let province = elem['denominazione_regione'];
+        let cases = elem['nuovi_positivi'];
 
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {

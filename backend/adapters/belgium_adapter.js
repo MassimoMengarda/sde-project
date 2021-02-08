@@ -9,9 +9,9 @@ const getData = async (req, res) => {
     console.log('Starting fetching Belgium dataset...');
 
     // Fetch the data in the html page and filter the results.
-    const data = await fetch(BASE_URL).then(fetch_res => {
+    const data = await fetch(BASE_URL).then(resFetch => {
         // Return the data as json.
-        return fetch_res.json();
+        return resFetch.json();
     }).then(resJSON => {
         console.log('Done fetching\nElaborating...');
 
@@ -34,9 +34,9 @@ function filter(data) {
 
     // Filter only data, province and cases.
     for (const elem of data) {
-        const date = elem.DATE;
-        let province = elem.PROVINCE;
-        let cases = elem.CASES;
+        const date = elem['DATE'];
+        let province = elem['PROVINCE'];
+        let cases = elem['CASES'];
 
         // Skip the rows that are not well defined.
         if (date !== undefined && province !== undefined && cases !== undefined) {

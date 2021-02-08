@@ -11,9 +11,9 @@ const getData = async (req, res) => {
     console.log('Starting fetching UK dataset...');
 
     // Fetch the number of pages (the offset cannot be removed).
-    const pages = await fetch(BASE_URL).then(fetch_res => {
+    const pages = await fetch(BASE_URL).then(resFetch => {
         // Return the data as json.
-        return fetch_res.json();
+        return resFetch.json();
     }).then(resJSON => {
         // Take the number of pages (at most 2 digits, remove = if only 1)
         return parseInt(resJSON.pagination.last.slice(-2).replace('=',''));
@@ -39,17 +39,17 @@ async function filter(pages) {
         const query = BASE_URL + '&page=' + i;
 
         // Fetch the i-th page and parse it to json.
-        const entries = await fetch(query).then(fetch_res => {
-            return fetch_res.json();
+        const entries = await fetch(query).then(resFetch => {
+            return resFetch.json();
         }).then(resJSON => {
             return resJSON.data;
         });
 
         // Filter only data, province and cases.
         for (const elem of entries) {
-            const date = elem.date;
-            let province = elem.name;
-            let cases = elem.cases;
+            const date = elem['date'];
+            let province = elem['name'];
+            let cases = elem['cases'];
 
             // Skip the rows that are not well defined.
             if (date !== undefined && province !== undefined && cases !== undefined) {

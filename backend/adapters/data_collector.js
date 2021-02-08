@@ -23,7 +23,7 @@ const getDataByPeriod = async (req, res) => {
     const date2 = utils.getDate(req.query.date2);
 
     // Check whether the query params are not well-defined.
-    if (date1 === undefined || date2 === undefined) {
+    if (date1 === undefined || date2 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
         await getAllData(req, res);
         return;
     }
@@ -31,13 +31,6 @@ const getDataByPeriod = async (req, res) => {
     // Order dates.
     const initialDate = date1 <= date2 ? date1 : date2;
     const finalDate = date1 > date2 ? date1 : date2;
-
-    // Check if data ranges is valid.
-    if (new Date(initialDate) < new Date('2020-01-01') || new Date(finalDate) >= new Date()) {
-        res.status(400);
-        res.send('Input dates are not valid (cannot select data before year 2020');
-        return;
-    } 
     
     // Prepare results.
     const result = {};
@@ -56,8 +49,8 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
     const inDB = await isInDB(endPoint, finalDate);
     if (inDB) {
         const query = utils.BASE_URL + 'db/' + endPoint + '?date1=' + initialDate + '&date2=' + finalDate;
-        const dbEntries = await fetch(query).then(fetch_res => {
-            return fetch_res.json();
+        const dbEntries = await fetch(query).then(resFetch => {
+            return resFetch.json();
         });
         return dbEntries.result;
     } else {
@@ -77,8 +70,8 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
 
 // Function that given the name of an endpoint, it fetches and returns the data.
 async function fetchEndPoint(endPoint) {
-    const data = await fetch(utils.BASE_URL + endPoint).then(fetch_res => {
-        return fetch_res.json();
+    const data = await fetch(utils.BASE_URL + endPoint).then(resFetch => {
+        return resFetch.json();
     });
 
     // Post data on database adapter.
@@ -96,8 +89,8 @@ async function fetchEndPoint(endPoint) {
 // Function to check if a date is present as record in a db of a given endpoint.
 async function isInDB(endPoint, date) {
     const query = utils.BASE_URL + 'db/' + endPoint + '?date1=' + date;
-    const result = await fetch(query).then(fetch_res => {
-        return fetch_res.json();
+    const result = await fetch(query).then(resFetch => {
+        return resFetch.json();
     }).then(resJSON => {
         // If length == 0 it is not present.
         return resJSON.result.length !== 0

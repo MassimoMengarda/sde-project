@@ -6,13 +6,6 @@ const getRegion = async (req, res) => {
     const region = req.params.region;
     const date = utils.getDate(req.query.date);
 
-    // Check if date is well-defined.
-    if (date === undefined) {
-        res.status(400);
-        res.send('Select a valid date');
-        return;
-    }
-
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
         res.status(404);
@@ -20,9 +13,16 @@ const getRegion = async (req, res) => {
         return;
     }
 
+    // Check if date is well-defined and not in the future.
+    if (date === undefined || !utils.isValidDate(date)) {
+        res.status(400);
+        res.send(date + 'is not a valid date');
+        return;
+    }
+
     const regionQuery = utils.BASE_URL + 'region-mapper/' + region + '?date=' + date;
-    const provinceData = await fetch(regionQuery).then(fetch_res => {
-        return fetch_res.json();
+    const provinceData = await fetch(regionQuery).then(resFetch => {
+        return resFetch.json();
     }).then(JSONdata => {
         // TODO check if undefined?
         return JSONdata[region][0].provinces;
@@ -31,9 +31,9 @@ const getRegion = async (req, res) => {
     const locations = locationsMapper(provinceData);
     
     const imageQuery = utils.BASE_URL + 'map-image/' + region + '?data=' + locations;
-    const map = await fetch(imageQuery).then((fetch_res) => {
+    const map = await fetch(imageQuery).then((resFetch) => {
         // .buffer() because we receive an image from fetch function
-        return fetch_res.buffer();
+        return resFetch.buffer();
     });
 
     // Set the right content type

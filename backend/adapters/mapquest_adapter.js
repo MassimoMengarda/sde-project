@@ -41,9 +41,9 @@ const getMap = async (req, res) => {
                 MAPS_SIZE + '&' +
                 regionInfo.zoom + '&' + 
                 regionInfo.center + mapLocations;
-    const data = await fetch(query).then((fetch_res) => {
+    const data = await fetch(query).then(resFetch => {
         // .buffer() because we receive an image from fetch function.
-        return fetch_res.buffer();
+        return resFetch.buffer();
     });
 
     // Set the right content type (without this, the map image is downloaded)
@@ -58,8 +58,8 @@ const getMap = async (req, res) => {
 
 // Function to retrieve all the necessary information of a region.
 async function getRegionInfo(region) {
-    const regionInfo = await fetch(utils.BASE_URL + 'db-info/' + region).then(fetch_res => {
-        return fetch_res.json();
+    const regionInfo = await fetch(utils.BASE_URL + 'db-info/' + region).then(resFetch => {
+        return resFetch.json();
     });
 
     const result = {
