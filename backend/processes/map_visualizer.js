@@ -2,7 +2,8 @@ const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 const regions = require('../utils/regions');
 
-const getRegion = async (req, res) => {
+// Function to handle the requests for the map visualizer endpoint.
+const handleMapRequest = async (req, res) => {
     const region = req.params.region;
     const date = utils.getDate(req.query.date);
 
@@ -16,10 +17,15 @@ const getRegion = async (req, res) => {
     // Check if date is well-defined and not in the future.
     if (date === undefined || !utils.isValidDate(date)) {
         res.status(400);
-        res.send(date + 'is not a valid date');
+        res.send(date + ' is not a valid date');
         return;
     }
 
+    await handleMapResponse(res, region, date);
+}
+
+// Function to handle the response from the map visualizer endpoint.
+async function handleMapResponse(res, region, date) {
     const regionQuery = utils.BASE_URL + 'region-mapper/' + region + '?date=' + date;
     const provinceData = await fetch(regionQuery).then(resFetch => {
         return resFetch.json();
@@ -32,19 +38,18 @@ const getRegion = async (req, res) => {
     
     const imageQuery = utils.BASE_URL + 'map-image/' + region + '?data=' + locations;
     const map = await fetch(imageQuery).then((resFetch) => {
-        // .buffer() because we receive an image from fetch function
+        // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
     });
 
-    // Set the right content type
+    // Set the right content type.
     res.set('Content-Type', 'image/png');
     res.status(200);
     res.send(map);
 }
 
-// Function to format the data as
-// location name => number of cases
-// and return it as string
+// Function to format the data as location name => number of cases
+// and return it as string.
 function locationsMapper(data) {
     const result = [];
     for (const key in data) {
@@ -54,5 +59,5 @@ function locationsMapper(data) {
 }
 
 exports.register = app => {
-    app.get('/map/:region?', getRegion);
+    app.get('/map/:region?', handleMapRequest);
 };

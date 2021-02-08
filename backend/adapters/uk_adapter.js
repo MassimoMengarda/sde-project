@@ -7,7 +7,7 @@ const BASE_URL = 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=r
 
 // Function that retrieves the whole uk dataset.
 // The data is filtered using the filter function.
-const getData = async (req, res) => {
+const handleDataRequest = async (req, res) => {
     console.log('Starting fetching UK dataset...');
 
     // Fetch the number of pages (the offset cannot be removed).
@@ -26,7 +26,7 @@ const getData = async (req, res) => {
     console.log('Done fetching\nSending data...');
     res.status(200);
     res.send({result: data});
-    console.log('Done!');
+    console.log('Done!\n');
 }
 
 // Function to retrieve and filter the data.
@@ -70,5 +70,5 @@ async function filter(pages) {
 
 // Export the function to register the endpoint.
 exports.register = app => {
-    app.get('/uk', getData);
+    app.get('/uk', handleDataRequest);
 };

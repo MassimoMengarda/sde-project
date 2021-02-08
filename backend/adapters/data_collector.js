@@ -2,8 +2,21 @@ const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 const regions = require('../utils/regions');
 
+// Function to handle the requests to the endpoint. 
+const handleDataRequest = async (req, res) => {
+    const date1 = utils.getDate(req.query.date1);
+    const date2 = utils.getDate(req.query.date2);
+
+    // Check whether we need to get all the data or only by period.
+    if (date1 === undefined || date2 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
+        await handleResponseAllData(res);
+    } else {
+        await handleResponseByPeriod(res, date1, date2);
+    }
+}
+
 // Function that fetches all the endpoints and process the data.
-const getAllData = async (req, res) => {
+async function handleResponseAllData(res) {
     console.log('Fetching all the endpoints')
 
     // Fetch the endpoints.
@@ -17,17 +30,7 @@ const getAllData = async (req, res) => {
     res.send(result);
 }
 
-// Function that handles the endpoint's calls 
-const getDataByPeriod = async (req, res) => {
-    const date1 = utils.getDate(req.query.date1);
-    const date2 = utils.getDate(req.query.date2);
-
-    // Check whether the query params are not well-defined.
-    if (date1 === undefined || date2 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
-        await getAllData(req, res);
-        return;
-    }
-
+async function handleResponseByPeriod(res, date1, date2) {
     // Order dates.
     const initialDate = date1 <= date2 ? date1 : date2;
     const finalDate = date1 > date2 ? date1 : date2;
@@ -81,8 +84,8 @@ async function fetchEndPoint(endPoint) {
         body:    JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' }
     });
-    console.log('Done updating');
-
+    
+    console.log('Done updating\n');
     return data;
 }
 
@@ -100,5 +103,5 @@ async function isInDB(endPoint, date) {
 
 // Export the function to register the endpoint.
 exports.register = app => {
-    app.get('/data', getDataByPeriod);
+    app.get('/data', handleDataRequest);
 };

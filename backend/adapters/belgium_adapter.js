@@ -5,7 +5,7 @@ const BASE_URL = 'https://epistat.sciensano.be/Data/COVID19BE_CASES_MUNI.json';
 
 // Function that retrieves the whole belgium dataset.
 // The data is filtered using the filter function.
-const getData = async (req, res) => {
+const handleDataRequest = async (req, res) => {
     console.log('Starting fetching Belgium dataset...');
 
     // Fetch the data in the html page and filter the results.
@@ -24,7 +24,7 @@ const getData = async (req, res) => {
     console.log('Sending data...');
     res.status(200);
     res.send(data);
-    console.log('Done!');
+    console.log('Done!\n');
 }
 
 // Function to filter the retrieved data.
@@ -63,5 +63,5 @@ function filter(data) {
 
 // Export the function to register the endpoint.
 exports.register = app => {
-    app.get('/belgium', getData);
+    app.get('/belgium', handleDataRequest);
 };

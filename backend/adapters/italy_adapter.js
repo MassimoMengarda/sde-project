@@ -6,7 +6,7 @@ const BASE_URL = 'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati
 // Function that retrieves the whole italian dataset.
 // The dataset is initially in csv form and then parsed to json.
 // The data is then filtered using the filter function.
-const getData = async (req, res) => {
+const handleDataRequest = async (req, res) => {
     console.log('Starting fetching Italy dataset...');
 
     // Fetch the data in the html page.
@@ -43,7 +43,7 @@ const getData = async (req, res) => {
     console.log('Sending data...');
     res.status(200);
     res.send(data);
-    console.log('Done!');
+    console.log('Done!\n');
 };
 
 // Function to filter the retrieved data.
@@ -80,5 +80,5 @@ function filter(data) {
 
 // Export the function to register the endpoint.
 exports.register = app => {
-    app.get('/italy', getData);
+    app.get('/italy', handleDataRequest);
 };

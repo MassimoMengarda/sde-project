@@ -6,8 +6,8 @@ const WIKI_BASE_URL = 'https://en.wikipedia.org/w/api.php?action=query&format=js
 
 const COUNTRIES_KEY = '2e0b2c19b3mshf16fe5d8d69f47dp17e29ejsnabd62970f152'; // TODO move to better file
 
-// Function to retrieve information about the selected region.
-const getRegionInfo = async (req, res) => {
+// Function to handle requests of information about the selected region.
+const handleRegionInfoRequest = async (req, res) => {
     const region = req.params.region;
 
     if (!regions.isValidRegion(region)) {
@@ -16,10 +16,16 @@ const getRegionInfo = async (req, res) => {
         return;
     }
 
+    await handleRegionInfoResponse(res, region);
+}
+
+// Function to handle responses for information about the selected region.
+async function handleRegionInfoResponse(res, region) {
     // Retrieve the information.
     const stats = await getAreaAndPopulation(regions.getRegionTranslation(region, 'countries'));
     const coords = await getCoordinates(regions.getRegionTranslation(region, 'wiki'));
 
+    // Build the response object.
     const result = {
         'region' : region,
         'area' : stats.area.split('.')[0],
@@ -46,7 +52,7 @@ async function getCoordinates(region) {
     }).catch(() => {
         console.log('Wikipedia fetch error: Location ' + region + ' not found');
         return undefined;
-    });;
+    });
 
     return data;
 }
@@ -55,8 +61,9 @@ async function getCoordinates(region) {
 // https://rapidapi.com/natkapral/api/countries-cities
 async function getAreaAndPopulation(region) {
     // Add also the needed headers.
-    const data = await fetch(COUNTRIES_BASE_URL + region, { headers :
-                    {   'x-rapidapi-key': COUNTRIES_KEY,
+    const data = await fetch(COUNTRIES_BASE_URL + region, {
+                    headers : {
+                        'x-rapidapi-key': COUNTRIES_KEY,
                         'x-rapidapi-host': 'countries-cities.p.rapidapi.com',
                         'useQueryString': 'true'
                     }
@@ -72,5 +79,5 @@ async function getAreaAndPopulation(region) {
 
 // Export the function to register the endpoint.
 exports.register = (app) => {
-    app.get('/get-region-info/:region?', getRegionInfo);
+    app.get('/get-region-info/:region?', handleRegionInfoRequest);
 };

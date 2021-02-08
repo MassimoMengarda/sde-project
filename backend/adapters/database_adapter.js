@@ -42,7 +42,6 @@ function createRegionsDatabase() {
     // Insert in the database the regions.
     populateRegionsDatabase(database);
 
-    console.log('Done loading regions database\n');
     return database;
 }
 
@@ -53,31 +52,34 @@ function populateRegionsDatabase(database) {
         database.findOne({region: region}, (err, entry) => {
             // Add information only if it is not present.
             if (entry === undefined || entry === null) {
-    
-                // Wait due to the rate limit of 1 request per second.
-                setTimeout(() => {
-                    console.log('Updating regions database for ' + region);
-                    fetch(utils.BASE_URL + 'get-region-info/' + region).then(resFetch => {
-                        return resFetch.json();
-                    }).then(result => {
-                        insertNewData(database, [result]);
-                    });
-                }, 3000 * counter);
-
+                // Wait due to the rate limit of the APIs.
+                // TODO, we could have some errors due to the rate limit, what to do?
+                setTimeout(() => addRegionInfo(database, region), 3000 * counter);
                 counter += 1;
             }
         });
     }
 }
 
-// Function that returns a list of entries whether present in the db.
-const select = async (req, res) => {
+// Function to fetch information about a region and insert it in the database.
+function addRegionInfo(database, region) {
+    console.log('Updating regions database for ' + region);
+
+    fetch(utils.BASE_URL + 'get-region-info/' + region).then(resFetch => {
+        return resFetch.json();
+    }).then(result => {
+        insertNewData(database, [result]);
+    });
+}
+
+// Function to handle the select requests to the database.
+const handleSelectRequest = async (req, res) => {
     const region = req.params.region;
     
     const date1 = utils.getDate(req.query.date1);
     const date2 = req.query.date2 === undefined ? date1 : utils.getDate(req.query.date2);
 
-    // Check if a db exists.
+    // Check the given region is valid.
     if (!regions.isValidRegion(region)) {
         res.status(400);
         res.send('Region ' + region + ' not expected');
@@ -91,6 +93,11 @@ const select = async (req, res) => {
         return;
     }
 
+    await handleSelectResponse(res, region, date1, date2);
+}
+
+// Function to handle the select responses from the database.
+async function handleSelectResponse(res, region, date1, date2) {
     // Order dates.
     const initialDate = date1 <= date2 ? date1 : date2;
     const finalDate = date1 > date2 ? date1 : date2;
@@ -114,40 +121,13 @@ const select = async (req, res) => {
         }
     }
     
-
     // Send data and response code 200.
     res.status(200);
     res.send({result: result});
 }
 
-// Function that returns the information about the requested region.
-const getRegionInfo = async (req, res) => {
-    const region = req.params.region;
-
-    // Check if it is a valid region.
-    if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send('Region ' + region + ' not expected');
-        return;
-    }
-
-    // Get the information in the DB.
-    const entry = await new Promise((resolve, reject) => {
-        regionsDB.findOne({region: region}, (err, entry) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(entry); 
-        });
-    });
-    
-    // Send data and response code 200.
-    res.status(200);
-    res.send(entry);
-}
-
-// Function that inserts new data in the db, it is called by the endpoint.
-const insert = (req, res) => {
+// Function to handle the insert requests to the database.
+const handleInsertRequest = async (req, res) => {
     const region = req.params.region;
     const data = req.body.result;
 
@@ -165,11 +145,47 @@ const insert = (req, res) => {
         return;
     }
 
+    await handleInsertResponse(res, region, data);
+}
+
+// Function to handle the insert responses from the database.
+async function handleInsertResponse(res, region, data) {
     // Insert new records if not already present.
     insertNewData(databases[region], data);
 
     // Send response code 200.
     res.sendStatus(200);
+}
+
+// Function to handle the requests of information about a region.
+const handleRegionInfoRequest = async (req, res) => {
+    const region = req.params.region;
+
+    // Check if it is a valid region.
+    if (!regions.isValidRegion(region)) {
+        res.status(400);
+        res.send('Region ' + region + ' not expected');
+        return;
+    }
+
+    await handleRegionInfoResponse(res, region);
+}
+
+// Function to handle the responses for information about a region.
+async function handleRegionInfoResponse(res, region) {
+    // Get the information in the DB.
+    const entry = await new Promise((resolve, reject) => {
+        regionsDB.findOne({region: region}, (err, entry) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(entry); 
+        });
+    });
+    
+    // Send data and response code 200.
+    res.status(200);
+    res.send(entry);
 }
 
 // Function that inserts data in a database.
@@ -186,7 +202,7 @@ function insertNewData(db, data) {
 
 // Export the function to register the endpoint.
 exports.register = (app) => {
-    app.get('/db/:region?', select);
-    app.post('/db/:region?', insert);
-    app.get('/db-info/:region?', getRegionInfo);
+    app.get('/db/:region?', handleSelectRequest);
+    app.post('/db/:region?', handleInsertRequest);
+    app.get('/db-info/:region?', handleRegionInfoRequest);
 };

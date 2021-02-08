@@ -6,9 +6,8 @@ const BASE_URL = 'https://www.mapquestapi.com/staticmap/v5/map?';
 const KEY = 'key=msjfZTaaaRwasQi8K3jplvGnZBUvPFA0'; // Move to a better file.
 const MAPS_SIZE = 'size=@2x';
 
-// Function that retrieves the map of region indicated in URL.
-const getMap = async (req, res) => {
-    // Get the region and location params.
+// Function to handle the requests for the endpoint.
+const handleMapRequest = async (req, res) => {
     const region = req.params.region;
     const input = req.query.data;
 
@@ -19,6 +18,11 @@ const getMap = async (req, res) => {
         return;
     }
 
+    await handleMapResponse(res, region, input);
+}
+
+// Function to handle the responses from the endpoint.
+async function handleMapResponse(res, region, input) {
     // input is a string in the following form:
     // [["rome", 100], ["milan", 200]]
     let locations = undefined;
@@ -52,9 +56,8 @@ const getMap = async (req, res) => {
     res.set('Content-Type', 'image/png');
     res.status(200);
     res.send(data);
-    console.log('Done!');
+    console.log('Done!\n');
 };
-
 
 // Function to retrieve all the necessary information of a region.
 async function getRegionInfo(region) {
@@ -104,5 +107,5 @@ function getMapLocations(locations, regionInfo) {
 
 // Export the function to register the endpoint.
 exports.register = (app) => {
-    app.get('/map-image/:region?', getMap);
+    app.get('/map-image/:region?', handleMapRequest);
 };

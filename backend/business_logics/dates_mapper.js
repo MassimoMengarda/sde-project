@@ -2,7 +2,8 @@ const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 const regions = require('../utils/regions');
 
-const getDataByRegion = async (req, res) => {
+// Function to handle requests for the endpoint.
+const handleDataRequest = async (req, res) => {
     const region = req.params.region;
     const date1 = utils.getDate(req.query.date1);
     const date2 = utils.getDate(req.query.date2);
@@ -27,11 +28,17 @@ const getDataByRegion = async (req, res) => {
         return;
     }
 
+    await handleDataResponse(res, region, date1, date2);
+}
+
+// Function to handle responses from the endpoint.
+async function handleDataResponse(res, region, date1, date2) {
     const query = utils.BASE_URL + 'data?date1=' + date1 + '&date2=' + date2;
     const data = await fetch(query).then(resFetch => {
         return resFetch.json();
     });
 
+    // Prepare the results.
     const result = {};
     result[region] = data[region];
 
@@ -40,5 +47,5 @@ const getDataByRegion = async (req, res) => {
 }
 
 exports.register = app => {
-    app.get('/dates-mapper/:region?', getDataByRegion);
+    app.get('/dates-mapper/:region?', handleDataRequest);
 };
