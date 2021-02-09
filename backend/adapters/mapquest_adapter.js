@@ -18,12 +18,6 @@ const handleMapRequest = async (req, res) => {
         return;
     }
 
-    console.log(`[MAPQUEST ADAPTER] - Map request for region ${region}`);
-    await handleMapResponse(res, region, input);
-}
-
-// Function to handle the responses from the endpoint.
-async function handleMapResponse(res, region, input) {
     // input is a string in the following form:
     // [["rome", 100], ["milan", 200]]
     let locations = undefined;
@@ -35,6 +29,12 @@ async function handleMapResponse(res, region, input) {
         return;
     }
 
+    console.log(`[MAPQUEST ADAPTER] - Map request for region ${region}`);
+    await handleMapResponse(res, region, locations);
+}
+
+// Function to handle the responses from the endpoint.
+async function handleMapResponse(res, region, locations) {
     // Retrieve the fields to pass to the mapquest API.
     const regionInfo = await getRegionInfo(region);
     const mapLocations = getMapLocations(locations, regionInfo);
