@@ -4,15 +4,15 @@ const regions = require('../utils/regions');
 
 // Function to handle the requests to the endpoint. 
 const handleDataRequest = async (req, res) => {
-    const date1 = utils.getDate(req.query.date1);
-    const date2 = utils.getDate(req.query.date2);
+    const from = utils.getDate(req.query.from);
+    const to = utils.getDate(req.query.to);
 
     // Check whether we need to get all the data or only by period.
-    if (date1 === undefined || date2 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
+    if (from === undefined || to === undefined || !utils.isValidDate(from) || !utils.isValidDate(to)) {
         console.log(`[DATA COLLECTOR] - Request for all data\n`);
         await handleResponseAllData(res);
-    } else {console.log(`[DATA COLLECTOR] - Request for data between ${date1} and ${date2}\n`);
-        await handleResponseByPeriod(res, date1, date2);
+    } else {console.log(`[DATA COLLECTOR] - Request for data between ${from} and ${to}\n`);
+        await handleResponseByPeriod(res, from, to);
     }
 }
 
@@ -32,10 +32,10 @@ async function handleResponseAllData(res) {
     console.log(`[DATA COLLECTOR] - Done`);
 }
 
-async function handleResponseByPeriod(res, date1, date2) {
+async function handleResponseByPeriod(res, from, to) {
     // Order dates.
-    const initialDate = date1 <= date2 ? date1 : date2;
-    const finalDate = date1 > date2 ? date1 : date2;
+    const initialDate = from <= to ? from : to;
+    const finalDate = from > to ? from : to;
     
     // Prepare results.
     const result = {};
@@ -54,7 +54,7 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
     // If final date is present I can assume all the dates before that are present too.
     const inDB = await isInDB(endPoint, finalDate);
     if (inDB) {
-        const query = `${utils.BASE_URL}/db/${endPoint}?date1=${initialDate}&date2=${finalDate}`;
+        const query = `${utils.BASE_URL}/db/${endPoint}?from=${initialDate}&to=${finalDate}`;
         const dbEntries = await fetch(query).then(resFetch => {
             return resFetch.json();
         });
@@ -65,7 +65,7 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
         const endPointData = await fetchEndPoint(endPoint);
         
         const result = [];
-        for (const entry of endPointData.result) {
+        for (const entry of endPointData.data) {
             if (dates.includes(entry.date)) {
                 result.push(entry);
             }
@@ -78,6 +78,8 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
 async function fetchEndPoint(endPoint) {
     const data = await fetch(`${utils.BASE_URL}/${endPoint}`).then(resFetch => {
         return resFetch.json();
+    }).then(resJSON => {
+        return {data : resJSON['result']};
     });
 
     // Post data on database adapter.
@@ -94,12 +96,9 @@ async function fetchEndPoint(endPoint) {
 
 // Function to check if a date is present as record in a db of a given endpoint.
 async function isInDB(endPoint, date) {
-    const query = `${utils.BASE_URL}/db/${endPoint}?date1=${date}`;
+    const query = `${utils.BASE_URL}/db/${endPoint}?from=${date}`;
     const result = await fetch(query).then(resFetch => {
-        return resFetch.json();
-    }).then(resJSON => {
-        // If length == 0 it is not present.
-        return resJSON.result.length !== 0
+        return resFetch.ok;
     });
     return result;
 }

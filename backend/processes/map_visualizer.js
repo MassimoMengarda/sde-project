@@ -29,14 +29,19 @@ const handleMapRequest = async (req, res) => {
 async function handleMapResponse(res, region, date) {
     const regionQuery = `${utils.BASE_URL}/region-mapper/${region}?date=${date}`;
     const provinceData = await fetch(regionQuery).then(resFetch => {
+        if (!resFetch.ok) {
+            throw resFetch;
+        }
         return resFetch.json();
     }).then(JSONdata => {
-        // TODO check if undefined?
         return JSONdata[region][0].provinces;
+    }).catch(err => {
+        return {};
     });
 
     const locations = locationsMapper(provinceData);
     
+    // TODO check if no data has been provided
     const imageQuery = `${utils.BASE_URL}/map-image/${region}?data=${locations}`;
     const map = await fetch(imageQuery).then((resFetch) => {
         // .buffer() because we receive an image from fetch function.

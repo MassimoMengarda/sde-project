@@ -29,7 +29,7 @@ async function handleRegionInfoResponse(res, region) {
     // Build the response object.
     const result = {
         'region' : region,
-        'area' : stats.area.split('.')[0],
+        'area' : Number(stats.area.split('.')[0]),
         'population' : stats.population,
         'coordinates' : coords
     }
@@ -81,5 +81,5 @@ async function getAreaAndPopulation(region) {
 
 // Export the function to register the endpoint.
 exports.register = (app) => {
-    app.get('/get-region-info/:region?', handleRegionInfoRequest);
+    app.get('/region-info/:region?', handleRegionInfoRequest);
 };

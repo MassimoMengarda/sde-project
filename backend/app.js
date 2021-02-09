@@ -28,4 +28,4 @@ require('./processes/map_visualizer').register(app);
 require('./processes/chart_visualizer').register(app);
 
 // Start server.
-app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
+app.listen(PORT, () => console.log(`App listening on port ${PORT}\n`));

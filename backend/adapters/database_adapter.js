@@ -65,7 +65,7 @@ function populateRegionsDatabase(database) {
 function addRegionInfo(database, region) {
     console.log(`[DATABASE ADAPTER] - Updating regions database for ` + region);
 
-    fetch(`${utils.BASE_URL}/get-region-info/${region}`).then(resFetch => {
+    fetch(`${utils.BASE_URL}/region-info/${region}`).then(resFetch => {
         return resFetch.json();
     }).then(result => {
         insertNewData(database, [result]);
@@ -76,8 +76,8 @@ function addRegionInfo(database, region) {
 const handleSelectRequest = async (req, res) => {
     const region = req.params.region;
     
-    const date1 = utils.getDate(req.query.date1);
-    const date2 = req.query.date2 === undefined ? date1 : utils.getDate(req.query.date2);
+    const from = utils.getDate(req.query.from);
+    const to = req.query.to === undefined ? from : utils.getDate(req.query.to);
 
     // Check the given region is valid.
     if (!regions.isValidRegion(region)) {
@@ -87,21 +87,21 @@ const handleSelectRequest = async (req, res) => {
     }
 
     // Need at least one date.
-    if (date1 === undefined || !utils.isValidDate(date1) || !utils.isValidDate(date2)) {
+    if (from === undefined || !utils.isValidDate(from) || !utils.isValidDate(to)) {
         res.status(400);
-        res.send(`${date1} is not a valid date`);
+        res.send(`${from} is not a valid date`);
         return;
     }
 
-    console.log(`[DATABASE ADAPTER] - Select request for region ${region} and dates ${date1} ${date2}`);
-    await handleSelectResponse(res, region, date1, date2);
+    console.log(`[DATABASE ADAPTER] - Select request for region ${region} and dates ${from} ${to}`);
+    await handleSelectResponse(res, region, from, to);
 }
 
 // Function to handle the select responses from the database.
-async function handleSelectResponse(res, region, date1, date2) {
+async function handleSelectResponse(res, region, from, to) {
     // Order dates.
-    const initialDate = date1 <= date2 ? date1 : date2;
-    const finalDate = date1 > date2 ? date1 : date2;
+    const initialDate = from <= to ? from : to;
+    const finalDate = from > to ? from : to;
     const dates = utils.getDatesBetween(initialDate, finalDate);
 
     const result = [];
@@ -121,17 +121,23 @@ async function handleSelectResponse(res, region, date1, date2) {
             result.push(entry);
         }
     }
+
+    console.log(`[DATABASE ADAPTER] - Done\n`);
+    if (result.length == 0) {
+        res.status(404);
+        res.send(`No data has been found for date ${initialDate}`);
+        return;
+    }
     
     // Send data and response code 200.
     res.status(200);
     res.send({result: result});
-    console.log(`[DATABASE ADAPTER] - Done\n`);
 }
 
 // Function to handle the insert requests to the database.
 const handleInsertRequest = async (req, res) => {
     const region = req.params.region;
-    const data = req.body.result;
+    const data = req.body.data;
 
     // Check if the region is supported.
     if (!regions.isValidRegion(region)) {
@@ -156,8 +162,8 @@ async function handleInsertResponse(res, region, data) {
     // Insert new records if not already present.
     insertNewData(databases[region], data);
 
-    // Send response code 200.
-    res.sendStatus(200);
+    // Send response code 201.
+    res.sendStatus(201);
     console.log(`[DATABASE ADAPTER] - Done\n`);
 }
 

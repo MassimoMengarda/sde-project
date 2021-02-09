@@ -5,8 +5,8 @@ const regions = require('../utils/regions');
 // Function to handle the requests for the map visualizer endpoint.
 const handleChartRequest = async (req, res) => {
     const region = req.params.region;
-    const date1 = utils.getDate(req.query.date1);
-    const date2 = utils.getDate(req.query.date2);
+    const from = utils.getDate(req.query.from);
+    const to = utils.getDate(req.query.to);
 
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
@@ -15,35 +15,41 @@ const handleChartRequest = async (req, res) => {
         return;
     }
 
-    // Check if date1 is well-defined.
-    if (date1 === undefined || !utils.isValidDate(date1)) {
+    // Check if from is well-defined.
+    if (from === undefined || !utils.isValidDate(from)) {
         res.status(400);
-        res.send(`${date1} is not a valid date`);
+        res.send(`${from} is not a valid date`);
         return;
     }
 
-    // Check if date2 is well-defined.
-    if (date2 === undefined || !utils.isValidDate(date2)) {
+    // Check if to is well-defined.
+    if (to === undefined || !utils.isValidDate(to)) {
         res.status(400);
-        res.send(`${date2} is not a valid date`);
+        res.send(`${to} is not a valid date`);
         return;
     }
 
-    console.log(`[CHART VISUALIZER] - Chart request for region ${region} and dates ${date1} and ${date2}`);
-    await handleChartResponse(res, region, date1, date2);
+    console.log(`[CHART VISUALIZER] - Chart request for region ${region} and dates ${from} and ${to}`);
+    await handleChartResponse(res, region, from, to);
 }
 
 // Function to handle the response from the map visualizer endpoint.
-async function handleChartResponse(res, region, date1, date2) {
-    const datesQuery = `${utils.BASE_URL}/dates-mapper/${region}?date1=${date1}&date2=${date2}`;
+async function handleChartResponse(res, region, from, to) {
+    const datesQuery = `${utils.BASE_URL}/dates-mapper/${region}?from=${from}&to=${to}`;
     const dates = await fetch(datesQuery).then(resFetch => {
+        if (!resFetch.ok) {
+            throw resFetch;
+        }
         return resFetch.json();
     }).then(JSONdata => {
         return JSONdata[region];
+    }).catch(err => {
+        return {};
     });
 
     const data = dataMapper(dates);
     
+    // TODO check if no data has been provided
     const chartQuery = `${utils.BASE_URL}/chart-image/${region}?data=${data}`;
     const chart = await fetch(chartQuery).then((resFetch) => {
         // .buffer() because we receive an image from fetch function.

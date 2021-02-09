@@ -5,8 +5,8 @@ const regions = require('../utils/regions');
 // Function to handle requests for the endpoint.
 const handleDataRequest = async (req, res) => {
     const region = req.params.region;
-    const date1 = utils.getDate(req.query.date1);
-    const date2 = utils.getDate(req.query.date2);
+    const from = utils.getDate(req.query.from);
+    const to = utils.getDate(req.query.to);
 
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
@@ -16,36 +16,47 @@ const handleDataRequest = async (req, res) => {
     }
 
     // Check if dates are well-defined.
-    if (date1 === undefined || !utils.isValidDate(date1)) {
+    if (from === undefined || !utils.isValidDate(from)) {
         res.status(400);
-        res.send(`${date1} is not a valid date`);
+        res.send(`${from} is not a valid date`);
         return;
     }
 
-    if (date2 === undefined || !utils.isValidDate(date2)) {
+    if (to === undefined || !utils.isValidDate(to)) {
         res.status(400);
-        res.send(`${date2} is not a valid date`);
+        res.send(`${to} is not a valid date`);
         return;
     }
 
-    console.log(`[DATES MAPPER] - Request for ${region} and dates ${date1} - ${date2}`);
-    await handleDataResponse(res, region, date1, date2);
+    console.log(`[DATES MAPPER] - Request for ${region} and dates ${from} - ${to}`);
+    await handleDataResponse(res, region, from, to);
 }
 
 // Function to handle responses from the endpoint.
-async function handleDataResponse(res, region, date1, date2) {
-    const query = `${utils.BASE_URL}/data?date1=${date1}&date2=${date2}`;
+async function handleDataResponse(res, region, from, to) {
+    const query = `${utils.BASE_URL}/data?from=${from}&to=${to}`;
     const data = await fetch(query).then(resFetch => {
+        if (!resFetch.ok) {
+            throw resFetch;
+        }
         return resFetch.json();
+    }).catch(err => {
+        return {};
     });
 
     // Prepare the results.
     const result = {};
     result[region] = data[region];
 
+    console.log(`[DATES MAPPER] - Done\n`);
+    if (Object.keys(result).length === 0 || Object.keys(result[region]).length === 0) {
+        res.status(404);
+        res.send(`No data has been found for date ${from}`);
+        return;
+    }
+
     res.status(200);
     res.send(result);
-    console.log(`[DATES MAPPER] - Done\n`);
 }
 
 exports.register = app => {
