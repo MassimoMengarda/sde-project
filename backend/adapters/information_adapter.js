@@ -11,9 +11,7 @@ const handleRegionInfoRequest = async (req, res) => {
     const region = req.params.region;
 
     if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send(`No data for region ${region}`);
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
     
     console.log(`[INFORMATION ADAPTER] - Request for region ${region}`);
@@ -34,9 +32,8 @@ async function handleRegionInfoResponse(res, region) {
         'coordinates' : coords
     }
 
-    res.status(200);
-    res.send(result);
     console.log(`[INFORMATION ADAPTER] - Done\n`);
+    res.status(200).send(result);
 }
 
 // Function to retrieve the coordinates of a given region.

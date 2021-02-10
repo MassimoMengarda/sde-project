@@ -1,3 +1,5 @@
+const fetch = require('node-fetch');
+
 // Address and port of the application.
 const BASE_URL = 'http://localhost:8080';
 
@@ -72,11 +74,30 @@ function dataFormatter(dataJSON) {
     return result;
 }
 
+async function fetchJSON(query) {
+    return await fetch(query).then(response => {
+        if (!response.ok) {
+            throw response;
+        }
+        return response.json();
+    }).catch(err => {
+        return {};
+    });
+}
+
+function handleError(res, code, message) {
+    console.log(message);
+    res.status(code);
+    res.send(message);
+}
+
 // Export functions
 module.exports = {
     BASE_URL,
     getDate,
     isValidDate,
     getDatesBetween,
-    dataFormatter
+    dataFormatter,
+    fetchJSON,
+    handleError
 }

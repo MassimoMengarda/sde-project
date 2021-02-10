@@ -9,16 +9,12 @@ const handleMapRequest = async (req, res) => {
 
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
-        res.status(404);
-        res.send(`No data for region ${region}`);
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // Check if date is well-defined and not in the future.
     if (date === undefined || !utils.isValidDate(date)) {
-        res.status(400);
-        res.send(`${date} is not a valid date`);
-        return;
+        return utils.handleError(res, 400, `${date} is not a valid date`);
     }
 
     console.log(`[MAP VISUALIZER] - Map request for region ${region} and date ${date}`);
@@ -27,32 +23,26 @@ const handleMapRequest = async (req, res) => {
 
 // Function to handle the response from the map visualizer endpoint.
 async function handleMapResponse(res, region, date) {
-    const regionQuery = `${utils.BASE_URL}/region-mapper/${region}?date=${date}`;
-    const provinceData = await fetch(regionQuery).then(resFetch => {
-        if (!resFetch.ok) {
-            throw resFetch;
-        }
-        return resFetch.json();
-    }).then(JSONdata => {
-        return JSONdata[region][0].provinces;
-    }).catch(err => {
-        return {};
-    });
+    const query = `${utils.BASE_URL}/region-mapper/${region}?date=${date}`;
+    const fetchedData = await utils.fetchJSON(query);
 
-    const locations = locationsMapper(provinceData);
-    
     // TODO check if no data has been provided
+    // if (Object.keys(fetchedData).length === 0 || fetchedData[region].length === 0) {
+    //     return utils.handleError(res, 404, `No data has been found for date ${date}`);
+    // }
+    
+    const provinces = fetchedData[region][0].provinces;
+    const locations = locationsMapper(provinces);
+    
     const imageQuery = `${utils.BASE_URL}/map-image/${region}?data=${locations}`;
-    const map = await fetch(imageQuery).then((resFetch) => {
+    const map = await fetch(imageQuery).then(resFetch => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
     });
 
     // Set the right content type.
-    res.set('Content-Type', 'image/png');
-    res.status(200);
-    res.send(map);
     console.log(`[MAP VISUALIZER] - Done\n`);
+    res.set('Content-Type', 'image/png').status(200).send(map);
 }
 
 // Function to format the data as location name => number of cases

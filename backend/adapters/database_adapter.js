@@ -81,16 +81,12 @@ const handleSelectRequest = async (req, res) => {
 
     // Check the given region is valid.
     if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send(`No data for region ${region}`);
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // Need at least one date.
     if (from === undefined || !utils.isValidDate(from) || !utils.isValidDate(to)) {
-        res.status(400);
-        res.send(`${from} is not a valid date`);
-        return;
+        return utils.handleError(res, 400, `${from} is not a valid date`);
     }
 
     console.log(`[DATABASE ADAPTER] - Select request for region ${region} and dates ${from} ${to}`);
@@ -124,14 +120,10 @@ async function handleSelectResponse(res, region, from, to) {
 
     console.log(`[DATABASE ADAPTER] - Done\n`);
     if (result.length == 0) {
-        res.status(404);
-        res.send(`No data has been found for date ${initialDate}`);
-        return;
+        return utils.handleError(res, 404, `No data has been found for date ${initialDate} in the database`);
     }
     
-    // Send data and response code 200.
-    res.status(200);
-    res.send({result: result});
+    res.status(200).send({result: result});
 }
 
 // Function to handle the insert requests to the database.
@@ -141,16 +133,12 @@ const handleInsertRequest = async (req, res) => {
 
     // Check if the region is supported.
     if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send(`No data for region ${region}`);
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // Check if data has been correctly sent.
     if (data === undefined) {
-        res.status(400);
-        res.send('No data was received');
-        return;
+        return utils.handleError(res, 400, 'No data was received');
     }
 
     console.log(`[DATABASE ADAPTER] - Insert request for region ${region}`);
@@ -163,8 +151,8 @@ async function handleInsertResponse(res, region, data) {
     insertNewData(databases[region], data);
 
     // Send response code 201.
-    res.sendStatus(201);
     console.log(`[DATABASE ADAPTER] - Done\n`);
+    res.sendStatus(201);
 }
 
 // Function to handle the requests of information about a region.
@@ -173,9 +161,7 @@ const handleRegionInfoRequest = async (req, res) => {
 
     // Check if it is a valid region.
     if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send(`No data for region ${region}`);
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     console.log(`[DATABASE ADAPTER] - Region info request for region ${region}`);
@@ -195,9 +181,8 @@ async function handleRegionInfoResponse(res, region) {
     });
     
     // Send data and response code 200.
-    res.status(200);
-    res.send(entry);
     console.log(`[DATABASE ADAPTER] - Done\n`);
+    res.status(200).send(entry);
 }
 
 // Function that inserts data in a database.

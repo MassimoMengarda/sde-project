@@ -27,9 +27,8 @@ async function handleResponseAllData(res) {
     }
 
     // Send the data to the client with response code 200.
-    res.status(200);
-    res.send(result);
     console.log(`[DATA COLLECTOR] - Done`);
+    res.status(200).send(result);
 }
 
 async function handleResponseByPeriod(res, from, to) {
@@ -44,9 +43,8 @@ async function handleResponseByPeriod(res, from, to) {
     }
 
     // Send the data to the client wih response code 200.
-    res.status(200);
-    res.send(result);
     console.log(`[DATA COLLECTOR] - Done`);
+    res.status(200).send(result);
 }
 
 // Function that retieves region data by dates.
@@ -54,10 +52,9 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
     // If final date is present I can assume all the dates before that are present too.
     const inDB = await isInDB(endPoint, finalDate);
     if (inDB) {
+        // I know data is in the database.
         const query = `${utils.BASE_URL}/db/${endPoint}?from=${initialDate}&to=${finalDate}`;
-        const dbEntries = await fetch(query).then(resFetch => {
-            return resFetch.json();
-        });
+        const dbEntries = await utils.fetchJSON(query);
         return dbEntries.result;
     } else {
         // Get dates between initialDate and finalDate.
@@ -76,11 +73,9 @@ async function getDataByDates(endPoint, initialDate, finalDate) {
 
 // Function that given the name of an endpoint, it fetches and returns the data.
 async function fetchEndPoint(endPoint) {
-    const data = await fetch(`${utils.BASE_URL}/${endPoint}`).then(resFetch => {
-        return resFetch.json();
-    }).then(resJSON => {
-        return {data : resJSON['result']};
-    });
+    // TODO: here we could have error 500.
+    const fetchedData = await utils.fetchJSON(`${utils.BASE_URL}/${endPoint}`);
+    const data = {data : fetchedData['result']};
 
     // Post data on database adapter.
     console.log(`[DATA COLLECTOR] - Updating db for endpoint ${endPoint}`);

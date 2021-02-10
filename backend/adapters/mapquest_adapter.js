@@ -13,9 +13,7 @@ const handleMapRequest = async (req, res) => {
 
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send('Parameter region is undefined');
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // input is a string in the following form:
@@ -24,9 +22,7 @@ const handleMapRequest = async (req, res) => {
     try {
         locations = JSON.parse(input);
     } catch(err) {
-        res.status(400);
-        res.send('Bad input data');
-        return;
+        return utils.handleError(res, 400, 'Bad input data');
     }
 
     console.log(`[MAPQUEST ADAPTER] - Map request for region ${region}`);
@@ -49,17 +45,14 @@ async function handleMapResponse(res, region, locations) {
 
     // Set the right content type (without this, the map image is downloaded)
     // and send the data to the client.
-    res.set('Content-Type', 'image/png');
-    res.status(200);
-    res.send(data);
     console.log(`[MAPQUEST ADAPTER] - Done\n`);
+    res.set('Content-Type', 'image/png').status(200).send(data);
 };
 
 // Function to retrieve all the necessary information of a region.
 async function getRegionInfo(region) {
-    const regionInfo = await fetch(`${utils.BASE_URL}/db-info/${region}`).then(resFetch => {
-        return resFetch.json();
-    });
+    // TODO we could have errors here
+    const regionInfo = await utils.fetchJSON(`${utils.BASE_URL}/db-info/${region}`);
 
     const result = {
         'region' : regionInfo.region,

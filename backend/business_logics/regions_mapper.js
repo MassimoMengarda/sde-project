@@ -9,16 +9,12 @@ const handleDataRequest = async (req, res) => {
 
     // Check if region is valid
     if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send(`No data for region ${region}`);
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // Check if date is well-defined.
     if (date === undefined || !utils.isValidDate(date)) {
-        res.status(400);
-        res.send(`${date} is not a valid date`);
-        return;
+        return utils.handleError(res, 400, `${date} is not a valid date`);
     }
 
     console.log(`[REGIONS MAPPER] - Request for region ${region} and date ${date}`);
@@ -27,34 +23,19 @@ const handleDataRequest = async (req, res) => {
 
 // Function to handle the responses from the endpoint.
 async function handleDataResponse(res, region, date) {
-    // TODO workaround, bad input parameters names
     const query = `${utils.BASE_URL}/data?from=${date}&to=${date}`;
-    const data = await fetch(query).then(resFetch => {
-        if (!resFetch.ok) {
-            throw resFetch;
-        }
-        return resFetch.json();
-    }).catch(err => {
-        return {};
-    });
+    const data = await utils.fetchJSON(query);
+
+    if (Object.keys(data).length === 0 || Object.keys(data[region]).length === 0) {
+        return utils.handleError(res, 404, `No data has been found for date ${date}`);
+    }
 
     // Prepare the results.
     let result = {};
-    if (region === undefined) {
-        result = data;
-    } else {
-        result[region] = data[region];
-    }
-
+    result[region] = data[region];
+    
     console.log(`[REGIONS MAPPER] - Done\n`);
-    if (Object.keys(result).length === 0 || Object.keys(result[region]).length === 0) {
-        res.status(404);
-        res.send(`No data has been found for date ${date}`);
-        return;
-    }
-
-    res.status(200);
-    res.send(result);
+    res.status(200).send(result);
 }
 
 exports.register = app => {

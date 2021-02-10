@@ -9,20 +9,17 @@ const handleDataRequest = async (req, res) => {
     console.log(`[BELGIUM ADAPTER] - Starting fetching dataset`);
 
     // Fetch the data in the html page and filter the results.
-    const data = await fetch(BASE_URL).then(resFetch => {
-        // Return the data as json.
-        return resFetch.json();
-    }).then(resJSON => {
-
-        // Filter the results.
-        const result = filter(resJSON);
-        return {result: result};
-    });
-
+    const fetchedData = await utils.fetchJSON(BASE_URL);
+    if (Object.keys(fetchedData).length === 0) {
+        return utils.handleError(res, 500, `Cannot contact belgian database\n`);
+    }
+    
+    // Filter the results.
+    const data = {result : filter(fetchedData)};
+    
     // Send the data to the client wih response code 200.
-    res.status(200);
-    res.send(data);
     console.log(`[BELGIUM ADAPTER] - Done\n`);
+    res.status(200).send(data);
 }
 
 // Function to filter the retrieved data.

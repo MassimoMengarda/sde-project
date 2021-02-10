@@ -10,23 +10,17 @@ const handleChartRequest = async (req, res) => {
 
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
-        res.status(404);
-        res.send(`No data for region ${region}`);
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // Check if from is well-defined.
     if (from === undefined || !utils.isValidDate(from)) {
-        res.status(400);
-        res.send(`${from} is not a valid date`);
-        return;
+        return utils.handleError(res, 400, `${from} is not a valid date`);
     }
 
     // Check if to is well-defined.
     if (to === undefined || !utils.isValidDate(to)) {
-        res.status(400);
-        res.send(`${to} is not a valid date`);
-        return;
+        return utils.handleError(res, 400, `${to} is not a valid date`);
     }
 
     console.log(`[CHART VISUALIZER] - Chart request for region ${region} and dates ${from} and ${to}`);
@@ -35,21 +29,16 @@ const handleChartRequest = async (req, res) => {
 
 // Function to handle the response from the map visualizer endpoint.
 async function handleChartResponse(res, region, from, to) {
-    const datesQuery = `${utils.BASE_URL}/dates-mapper/${region}?from=${from}&to=${to}`;
-    const dates = await fetch(datesQuery).then(resFetch => {
-        if (!resFetch.ok) {
-            throw resFetch;
-        }
-        return resFetch.json();
-    }).then(JSONdata => {
-        return JSONdata[region];
-    }).catch(err => {
-        return {};
-    });
+    const query = `${utils.BASE_URL}/dates-mapper/${region}?from=${from}&to=${to}`;
+    const fetchedData = await utils.fetchJSON(query);
 
-    const data = dataMapper(dates);
-    
     // TODO check if no data has been provided
+    // if (Object.keys(fetchedData).length === 0) {
+    //     return utils.handleError(res, 404, `No data has been found for date ${from}`);
+    // }
+
+    const data = dataMapper(fetchedData[region]);
+    
     const chartQuery = `${utils.BASE_URL}/chart-image/${region}?data=${data}`;
     const chart = await fetch(chartQuery).then((resFetch) => {
         // .buffer() because we receive an image from fetch function.
@@ -57,10 +46,8 @@ async function handleChartResponse(res, region, from, to) {
     });
 
     // Set the right content type.
-    res.set('Content-Type', 'image/png');
-    res.status(200);
-    res.send(chart);
     console.log(`[CHART VISUALIZER] - Done\n`);
+    res.set('Content-Type', 'image/png').status(200).send(chart);
 }
 
 // Function to format the data as location name => number of cases

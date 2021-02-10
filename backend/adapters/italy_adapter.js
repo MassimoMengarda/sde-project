@@ -11,6 +11,9 @@ const handleDataRequest = async (req, res) => {
 
     // Fetch the data in the html page.
     const data = await fetch(BASE_URL).then(resFetch => {
+        if (!resFetch.ok) {
+            throw resFetch;
+        }
         // Since data is csv, we return it as string.
         return resFetch.text();
     }).then(resCSV => {
@@ -36,12 +39,17 @@ const handleDataRequest = async (req, res) => {
         }
         // Filter the data.
         return { result: filter(result) };
+    }).catch(err => {
+        return {};
     });
 
+    if (Object.keys(data).length === 0) {
+        return utils.handleError(res, 500, `Cannot contact italian database\n`);
+    }
+
     // Send the data to the client wih response code 200.
-    res.status(200);
-    res.send(data);
     console.log(`[ITALY ADAPTER] - Done\n`);
+    res.status(200).send(data);
 };
 
 // Function to filter the retrieved data.

@@ -11,9 +11,7 @@ const handleChartRequest = async (req, res) => {
 
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
-        res.status(400);
-        res.send('Parameter region is undefined');
-        return;
+        return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // input is a string in the following form:
@@ -25,9 +23,7 @@ const handleChartRequest = async (req, res) => {
         labels = dates.map((v,i) => { return v[0]; });
         data = dates.map((v,i) => { return v[1]; });
     } catch(err) {
-        res.status(400);
-        res.send('Bad input data');
-        return;
+        return utils.handleError(res, 400, 'Bad input data');
     }
 
     console.log(`[CHART ADAPTER] - Chart request for region ${region}`);
@@ -54,10 +50,8 @@ async function handleChartResponse(res, region, labels, data) {
 
     // Set the right content type (without this, the chart is downloaded)
     // and send the data to the client.
-    res.set('Content-Type', 'image/png');
-    res.status(200);
-    res.send(chart);
     console.log(`[CHART ADAPTER] - Done\n`);
+    res.set('Content-Type', 'image/png').status(200).send(chart);
 }
 
 // Export the function to register the endpoint.

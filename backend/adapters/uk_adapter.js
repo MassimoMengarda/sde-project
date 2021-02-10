@@ -11,21 +11,19 @@ const handleDataRequest = async (req, res) => {
     console.log(`[UK ADAPTER] - Starting fetching dataset`);
 
     // Fetch the number of pages (the offset cannot be removed).
-    const pages = await fetch(BASE_URL).then(resFetch => {
-        // Return the data as json.
-        return resFetch.json();
-    }).then(resJSON => {
-        // Take the number of pages (at most 2 digits, remove = if only 1)
-        return parseInt(resJSON.pagination.last.slice(-2).replace('=',''));
-    });
+    const fetchedData = await utils.fetchJSON(BASE_URL);
+
+    if (Object.keys(fetchedData).length === 0) {
+        return utils.handleError(res, 500, `Cannot contact british database\n`);
+    }
     
     // Fetch and filter the data.
+    const pages = parseInt(fetchedData.pagination.last.slice(-2).replace('=',''));
     const data = await filter(pages);
 
     // Send the data to the client wih response code 200.
-    res.status(200);
-    res.send({result: data});
     console.log(`[UK ADAPTER] - Done\n`);
+    res.status(200).send({result: data});
 }
 
 // Function to retrieve and filter the data.
