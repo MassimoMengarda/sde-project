@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 
 const BASE_URL = 'https://epistat.sciensano.be/Data/COVID19BE_CASES_MUNI.json';
@@ -56,7 +55,7 @@ function filter(data) {
     return result;
 }
 
-// Export the function to register the endpoint.
+// Register endpoint.
 exports.register = app => {
     app.get('/belgium', handleDataRequest);
 };

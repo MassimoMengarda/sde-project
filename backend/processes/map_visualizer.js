@@ -55,6 +55,7 @@ function locationsMapper(data) {
     return JSON.stringify(result);
 }
 
+// Register endpoint.
 exports.register = app => {
     app.get('/map/:region?', handleMapRequest);
 };

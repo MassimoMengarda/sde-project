@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 
 // areaType is region, but it could be utla (too detailed)
@@ -36,11 +35,8 @@ async function filter(pages) {
         const query = `${BASE_URL}&page=${i}`;
 
         // Fetch the i-th page and parse it to json.
-        const entries = await fetch(query).then(resFetch => {
-            return resFetch.json();
-        }).then(resJSON => {
-            return resJSON.data;
-        });
+        const fetchedData = await utils.fetchJSON(query);
+        const entries = fetchedData.data;
 
         // Filter only data, province and cases.
         for (const elem of entries) {
@@ -65,7 +61,7 @@ async function filter(pages) {
     return result;
 }
 
-// Export the function to register the endpoint.
+// Register endpoint.
 exports.register = app => {
     app.get('/uk', handleDataRequest);
 };

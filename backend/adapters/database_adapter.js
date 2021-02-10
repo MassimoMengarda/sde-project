@@ -95,6 +95,7 @@ const handleSelectRequest = async (req, res) => {
 
 // Function to handle the select responses from the database.
 async function handleSelectResponse(res, region, from, to) {
+    // TODO move
     // Order dates.
     const initialDate = from <= to ? from : to;
     const finalDate = from > to ? from : to;
@@ -118,11 +119,11 @@ async function handleSelectResponse(res, region, from, to) {
         }
     }
 
-    console.log(`[DATABASE ADAPTER] - Done\n`);
     if (result.length == 0) {
         return utils.handleError(res, 404, `No data has been found for date ${initialDate} in the database`);
     }
     
+    console.log(`[DATABASE ADAPTER] - Done\n`);
     res.status(200).send({result: result});
 }
 
@@ -150,7 +151,6 @@ async function handleInsertResponse(res, region, data) {
     // Insert new records if not already present.
     insertNewData(databases[region], data);
 
-    // Send response code 201.
     console.log(`[DATABASE ADAPTER] - Done\n`);
     res.sendStatus(201);
 }
@@ -180,7 +180,6 @@ async function handleRegionInfoResponse(res, region) {
         });
     });
     
-    // Send data and response code 200.
     console.log(`[DATABASE ADAPTER] - Done\n`);
     res.status(200).send(entry);
 }
@@ -197,7 +196,7 @@ function insertNewData(db, data) {
     }
 }
 
-// Export the function to register the endpoint.
+// Register endpoints.
 exports.register = (app) => {
     app.get('/db/:region?', handleSelectRequest);
     app.post('/db/:region?', handleInsertRequest);

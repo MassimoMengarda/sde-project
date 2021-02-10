@@ -15,6 +15,9 @@ function getDate(date) {
     return date.substring(0, 10);
 }
 
+// Function to check whether a date is valid or not,
+// meaning that it must be well-formed, not before 2020-01-01
+// and not after today.
 function isValidDate(inputDate) {
     const dateAsString = getDate(inputDate);
     if (dateAsString === undefined) {
@@ -74,6 +77,8 @@ function dataFormatter(dataJSON) {
     return result;
 }
 
+// Function to fetch an endpoint and return the response in JSON format.
+// If there are errors we return an empty JSON. 
 async function fetchJSON(query) {
     return await fetch(query).then(response => {
         if (!response.ok) {
@@ -85,6 +90,8 @@ async function fetchJSON(query) {
     });
 }
 
+// Funciton to correctly handle errors by console.logging them
+// and sending them to the user.
 function handleError(res, code, message) {
     console.log(message);
     res.status(code);

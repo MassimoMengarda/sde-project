@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 const regions = require('../utils/regions');
 
@@ -38,6 +37,7 @@ async function handleDataResponse(res, region, date) {
     res.status(200).send(result);
 }
 
+// Register endpoint.
 exports.register = app => {
     app.get('/region-mapper/:region?', handleDataRequest);
 };

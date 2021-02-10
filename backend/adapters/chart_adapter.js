@@ -54,7 +54,7 @@ async function handleChartResponse(res, region, labels, data) {
     res.set('Content-Type', 'image/png').status(200).send(chart);
 }
 
-// Export the function to register the endpoint.
+// Register endpoint.
 exports.register = (app) => {
     app.get('/chart-image/:region?', handleChartRequest);
 };

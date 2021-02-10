@@ -76,7 +76,7 @@ async function getAreaAndPopulation(region) {
     return data;
 };
 
-// Export the function to register the endpoint.
+// Register endpoint.
 exports.register = (app) => {
     app.get('/region-info/:region?', handleRegionInfoRequest);
 };

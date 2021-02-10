@@ -84,7 +84,7 @@ function filter(data) {
     return result;
 }
 
-// Export the function to register the endpoint.
+// Register endpoint.
 exports.register = app => {
     app.get('/italy', handleDataRequest);
 };

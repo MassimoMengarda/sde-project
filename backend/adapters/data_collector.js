@@ -31,7 +31,9 @@ async function handleResponseAllData(res) {
     res.status(200).send(result);
 }
 
+// Function to handle responses of periods of time.
 async function handleResponseByPeriod(res, from, to) {
+    // TODO move
     // Order dates.
     const initialDate = from <= to ? from : to;
     const finalDate = from > to ? from : to;
@@ -98,7 +100,7 @@ async function isInDB(endPoint, date) {
     return result;
 }
 
-// Export the function to register the endpoint.
+// Register endpoint.
 exports.register = app => {
     app.get('/data', handleDataRequest);
 };

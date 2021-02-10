@@ -60,6 +60,7 @@ function dataMapper(data) {
     return JSON.stringify(result);
 }
 
+// Register endpoint.
 exports.register = app => {
     app.get('/chart/:region?', handleChartRequest);
 };
