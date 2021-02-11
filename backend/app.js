@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -8,8 +9,11 @@ const app = express();
 app.use(bodyParser.json({limit: '100mb', extended: true}));
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.json({ msg: 'Hello world' });
+app.get('/', async (req, res) => {
+    const API_DOCUMENTATION = 'https://app.swaggerhub.com/apis-docs/MassimoMengarda/SDE-project/1.0.0-oas3#/';
+    const THIS_PAGE = `<a href="${API_DOCUMENTATION}">this page<\a>`;
+    console.log('Get API documentation');
+    res.status(200).send(`Visit ${THIS_PAGE} for the documentation`);
 });
 
 // Register paths app paths.
