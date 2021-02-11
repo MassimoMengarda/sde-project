@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const PORT = 8080;
+const utils = require('./utils/utils');
+
 const app = express();
 
 app.use(bodyParser.json({limit: '100mb', extended: true}));
@@ -28,4 +29,4 @@ require('./processes/map_visualizer').register(app);
 require('./processes/chart_visualizer').register(app);
 
 // Start server.
-app.listen(PORT, () => console.log(`App listening on port ${PORT}\n`));
+app.listen(utils.PORT, () => console.log(`App listening on port ${utils.PORT}\n`));

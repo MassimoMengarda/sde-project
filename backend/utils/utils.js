@@ -1,7 +1,9 @@
 const fetch = require('node-fetch');
 
+const PORT = process.env.PORT || 8080;
+
 // Address and port of the application.
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = `http://localhost:${PORT}`;
 
 // Get formatted date as string.
 function getDate(date) {
@@ -100,6 +102,7 @@ function handleError(res, code, message) {
 
 // Export functions
 module.exports = {
+    PORT,
     BASE_URL,
     getDate,
     isValidDate,
