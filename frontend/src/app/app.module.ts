@@ -10,9 +10,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { CountrySelectorComponent } from './country-selector/country-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { CountryDetailsComponent } from './country-details/country-details.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { ProvincesChartComponent } from 'src/app/country-details/provinces-chart/provinces-chart.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatNativeDateModule } from '@angular/material/core';
+
+
 
 @NgModule({
-  declarations: [AppComponent, HeaderComponent, CountrySelectorComponent, CountryDetailsComponent],
+  declarations: [AppComponent, HeaderComponent, CountrySelectorComponent, CountryDetailsComponent, ProvincesChartComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -20,6 +27,10 @@ import { CountryDetailsComponent } from './country-details/country-details.compo
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatNativeDateModule
   ],
   providers: [],
   bootstrap: [AppComponent],
