@@ -12,14 +12,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { CountryDetailsComponent } from './country-details/country-details.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { ProvincesChartComponent } from 'src/app/country-details/provinces-chart/provinces-chart.component';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MapComponent } from './country-details/map/map.component';
+import { MatInputModule } from '@angular/material/input';
+import {MatCardModule} from '@angular/material/card';
 
 
 
 @NgModule({
-  declarations: [AppComponent, HeaderComponent, CountrySelectorComponent, CountryDetailsComponent, ProvincesChartComponent],
+  declarations: [AppComponent, HeaderComponent, CountrySelectorComponent, CountryDetailsComponent, ProvincesChartComponent, MapComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -30,7 +33,9 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule,
     MatFormFieldModule,
     ReactiveFormsModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatInputModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent],
