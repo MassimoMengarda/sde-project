@@ -18,6 +18,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MapComponent } from './country-details/map/map.component';
 import { MatInputModule } from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -35,7 +36,8 @@ import {MatCardModule} from '@angular/material/card';
     ReactiveFormsModule,
     MatNativeDateModule,
     MatInputModule,
-    MatCardModule
+    MatCardModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent],
