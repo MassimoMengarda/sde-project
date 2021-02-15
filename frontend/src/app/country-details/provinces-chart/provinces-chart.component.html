@@ -14,10 +14,15 @@
 </mat-form-field>
 
 <!-- <p>Selected range: {{range.value | json}}</p> -->
-
+<!-- {{ provincesName | json }} -->
 <div class="center">
   <mat-card class="box">
     <span>Provinces</span><br>
+    <table *ngIf="provincesName">
+      <tr *ngFor="let p of provincesName">
+        <th>{{ p }}</th>
+      </tr>
+    </table>
     <small>XXX</small>
   </mat-card>
   <mat-card class="box">

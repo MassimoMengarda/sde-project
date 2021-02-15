@@ -7,7 +7,7 @@ import { RegionDataset } from 'src/app/shared/models/region-dataset.model';
 @Injectable({
   providedIn: 'root'
 })
-export class CovidDataService {
+export class RegionMapperService {
   private baseUrl = 'http://localhost:8080/';
 
   public constructor(private httpSvc: HttpClient) { }

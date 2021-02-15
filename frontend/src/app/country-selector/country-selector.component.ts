@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { concat } from 'rxjs';
-import { CovidDataService } from 'src/app/shared/services/covid-data.service';
+import { RegionMapperService } from 'src/app/shared/services/region-mapper.service';
 
 @Component({
   selector: 'app-country-selector',
@@ -19,7 +19,7 @@ export class CountrySelectorComponent implements OnInit{
   public belgiumCases: number;
   public UKCases: number;
 
-  public constructor(private CovidSvc: CovidDataService) {
+  public constructor(private regionMapperSvc: RegionMapperService) {
     const today = new Date();
     let day = today.getDay() + 12; // +12 because we print the cases of the day before yesterday
     let month: string | number = today.getMonth() + 1;
@@ -41,7 +41,7 @@ export class CountrySelectorComponent implements OnInit{
     //   this.italyCases = res;
     // });
 
-    this.CovidSvc.getCases(this.date).subscribe((res) => {
+    this.regionMapperSvc.getCases(this.date).subscribe((res) => {
       this.italyCases = res[0].italy[0].cases;
       this.belgiumCases = res[1].belgium[0].cases;
       this.UKCases = res[2].uk[0].cases;
