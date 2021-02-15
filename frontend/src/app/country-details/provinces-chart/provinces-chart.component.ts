@@ -7,15 +7,22 @@ import { FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./provinces-chart.component.scss']
 })
 export class ProvincesChartComponent implements OnInit {
+  public range: FormGroup;
 
-  constructor() { }
+  public constructor() {
+    const today = new Date();
+    const day = today.getDay() + 14;
+    const month = today.getMonth();
+    const year = today.getFullYear();
 
-  ngOnInit(): void {
+    this.range = new FormGroup({
+      start: new FormControl(new Date(year, month, day - 7)),
+      end: new FormControl(new Date(year, month, day))
+    });
   }
 
-  range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl()
-  });
+  public ngOnInit(): void {
+
+  }
 
 }

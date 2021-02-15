@@ -9,17 +9,20 @@
     <button mat-raised-button (click)="setCurrentCountry('IT')" [disabled]="currentCountry==='IT'">
       <img src="/assets/italyFlag.png" alt="Italy" height="30" />
       <span>Italy</span><br>
-      <small>{{allData.italy.data[allData.italy.data.length-1].cases}} cases in the last 24 hours</small>
+      <!-- <small>{{ italyCases }} cases in the last 24 hours</small> -->
+      <small>{{ italyCases }} cases on {{ date }}</small>
     </button>
     <button mat-raised-button (click)="setCurrentCountry('BG')" [disabled]="currentCountry==='BG'">
       <img src="/assets/belgiumFlag.png" alt="Belgium" height="30" />
       <span>Belgium</span><br>
-      <small>{{allData.belgium.data[allData.belgium.data.length-1].cases}} cases in the last 24 hours</small>
+      <!-- <small>{{ belgiumCases }} cases in the last 24 hours</small> -->
+      <small>{{ belgiumCases }} cases on {{ date }}</small>
     </button>
     <button mat-raised-button (click)="setCurrentCountry('UK')" [disabled]="currentCountry==='UK'">
       <img src="/assets/ukFlag.png" alt="UK" height="30" />
       <span>United Kingdom</span><br>
-      <small>{{allData.uk.data[allData.uk.data.length-1].cases}} cases in the last 24 hours</small>
+      <!-- <small>{{ UKCases }} cases in the last 24 hours</small> -->
+      <small>{{ UKCases }} cases on {{ date }}</small>
     </button>
   </div>
 
