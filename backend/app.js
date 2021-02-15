@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const utils = require('./utils/utils');
 
@@ -8,6 +9,7 @@ const app = express();
 
 app.use(bodyParser.json({limit: '100mb', extended: true}));
 app.use(express.json());
+app.use(cors());
 
 app.get('/', async (req, res) => {
     const API_DOCUMENTATION = 'https://app.swaggerhub.com/apis-docs/MassimoMengarda/SDE-project/1.0.0-oas3#/';
