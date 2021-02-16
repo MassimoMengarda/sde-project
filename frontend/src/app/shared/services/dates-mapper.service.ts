@@ -24,4 +24,12 @@ export class DatesMapperService {
   public getItalyData(startDate: string, toDate: string): Observable<any> {
     return this.getData('italy', startDate, toDate);
   }
+
+  public getBelgiumData(startDate: string, toDate: string): Observable<any> {
+    return this.getData('belgium', startDate, toDate);
+  }
+
+  public getUKData(startDate: string, toDate: string): Observable<any> {
+    return this.getData('uk', startDate, toDate);
+  }
 }

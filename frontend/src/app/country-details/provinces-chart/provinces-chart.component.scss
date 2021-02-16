@@ -8,3 +8,18 @@
   width: 100%;
   text-align: center;
 }
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  .provinces {
+    text-align: left;
+  }
+
+  .cases {
+    text-align: right;
+  }
+}
