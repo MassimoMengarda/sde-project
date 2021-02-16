@@ -26,10 +26,10 @@ async function handleMapResponse(res, region, date) {
     const query = `${utils.BASE_URL}/region-mapper/${region}?date=${date}`;
     const fetchedData = await utils.fetchJSON(query);
 
-    // TODO check if no data has been provided
-    // if (Object.keys(fetchedData).length === 0 || fetchedData[region].length === 0) {
-    //     return utils.handleError(res, 404, `No data has been found for date ${date}`);
-    // }
+    // Check if no data has been provided.
+    if (Object.keys(fetchedData).length === 0 || fetchedData[region].length === 0) {
+        return utils.handleError(res, 404, `No data has been found for date ${date}`);
+    }
     
     const provinces = fetchedData[region][0].provinces;
     const locations = locationsMapper(provinces);
