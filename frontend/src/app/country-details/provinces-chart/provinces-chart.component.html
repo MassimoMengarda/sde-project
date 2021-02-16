@@ -25,7 +25,10 @@
   </mat-card>
   <mat-card class="box">
     <span>Chart</span><br>
-    <small>XXX</small>
+    <img [src]="chartImage" alt="Place image title" *ngIf="!isChartLoading; else noImageFound">
+    <ng-template #noImageFound>
+      <img src="/assets/loading.gif" alt="Fallbackimage">
+    </ng-template>
   </mat-card>
 </div>
 

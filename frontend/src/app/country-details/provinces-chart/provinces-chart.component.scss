@@ -1,7 +1,7 @@
 .box{
-  width: 30%;
+  width: 40%;
   margin: 20px;
-  display: inline-block;
+  display: inline-table;
 }
 
 .center {
@@ -10,10 +10,7 @@
 }
 
 table {
-  table-layout: fixed;
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
 
   .provinces {
     text-align: left;
@@ -22,4 +19,8 @@ table {
   .cases {
     text-align: right;
   }
+}
+
+img {
+  max-width: 100%
 }
