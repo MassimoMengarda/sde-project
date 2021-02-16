@@ -17,7 +17,7 @@ export class CountryDetailsComponent implements OnChanges{
     else if (this.country === 'BG')
       this.selectedCountry = 'Belgium';
     else if (this.country === 'UK')
-      this.selectedCountry = 'United Kingdom';
+      this.selectedCountry = 'UK';
   }
 
 

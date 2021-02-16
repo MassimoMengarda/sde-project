@@ -25,9 +25,9 @@
   </mat-card>
   <mat-card class="box">
     <span>Chart</span><br>
-    <img [src]="chartImage" alt="Place image title" *ngIf="!isChartLoading; else noImageFound">
+    <img [src]="chartImage" alt="Chart of infected" *ngIf="!isChartLoading; else noImageFound">
     <ng-template #noImageFound>
-      <img src="/assets/loading.gif" alt="Fallbackimage">
+      <img src="/assets/loading.gif" alt="Please wait...">
     </ng-template>
   </mat-card>
 </div>

@@ -57,11 +57,11 @@ export class ProvincesChartComponent implements OnChanges {
     this.provincesBox.clear();
 
     if (this.country === 'Italy') {
-      this.getItalyCasesProvinces(this.startDate, this.endDate);
+      this.getItalyCasesAndChart(this.startDate, this.endDate);
     } else if (this.country === 'Belgium') {
-      this.getBelgiumCasesProvinces(this.startDate, this.endDate);
+      this.getBelgiumCasesAndChart(this.startDate, this.endDate);
     } else {
-      this.getUKCasesProvinces(this.startDate, this.endDate);
+      this.getUKCasesAndChart(this.startDate, this.endDate);
     }
   }
 
@@ -81,7 +81,7 @@ export class ProvincesChartComponent implements OnChanges {
     }
   }
 
-  private getItalyCasesProvinces(startDate: string, endDate: string) {
+  private getItalyCasesAndChart(startDate: string, endDate: string) {
     this.datesMapperSvc.getItalyData(startDate, endDate).subscribe((res) => {
       const provinces = res.italy[0].provinces;
       for (let p in provinces) {
@@ -92,21 +92,25 @@ export class ProvincesChartComponent implements OnChanges {
       // Trucco per evitare l'errore "change view in html"
       this.provincesEntries = Array.from(this.provincesBox.entries());
 
-      this.isChartLoading = true;
-      this.chartSvc.getItalyChart(this.startDate, this.endDate).subscribe(
-        (data) => {
-          this.createImageFromBlob(data);
-          this.isChartLoading = false;
-        },
-        (error) => {
-          this.isChartLoading = false;
-          console.log(error);
-        }
-      );
     });
+    this.getChart();
   }
 
-  private getBelgiumCasesProvinces(startDate: string, endDate: string) {
+  private getChart() {
+    this.isChartLoading = true;
+    this.chartSvc.getChart(this.country.toLowerCase(), this.startDate, this.endDate).subscribe(
+      (data) => {
+        this.createImageFromBlob(data);
+        this.isChartLoading = false;
+      },
+      (error) => {
+        this.isChartLoading = false;
+        console.log(error);
+      }
+    );
+  }
+
+  private getBelgiumCasesAndChart(startDate: string, endDate: string) {
     this.datesMapperSvc.getBelgiumData(startDate, endDate).subscribe((res) => {
       const provinces = res.belgium[0].provinces;
       for (let p in provinces) {
@@ -116,9 +120,10 @@ export class ProvincesChartComponent implements OnChanges {
       // Trucco per evitare l'errore "change view in html"
       this.provincesEntries = Array.from(this.provincesBox.entries());
     });
+    this.getChart();
   }
 
-  private getUKCasesProvinces(startDate: string, endDate: string) {
+  private getUKCasesAndChart(startDate: string, endDate: string) {
     this.datesMapperSvc.getUKData(startDate, endDate).subscribe((res) => {
       const provinces = res.uk[0].provinces;
       for (let p in provinces) {
@@ -128,6 +133,7 @@ export class ProvincesChartComponent implements OnChanges {
       // Trucco per evitare l'errore "change view in html"
       this.provincesEntries = Array.from(this.provincesBox.entries());
     });
+    this.getChart();
   }
 
   private createImageFromBlob(image: Blob) {

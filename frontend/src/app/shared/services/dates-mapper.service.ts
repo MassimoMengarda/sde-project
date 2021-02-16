@@ -11,12 +11,12 @@ export class DatesMapperService {
 
   public constructor(private httpSvc: HttpClient) {}
 
-  private getData(
+  public getData(
     country: string,
     startDate: string,
     toDate: string
-  ): Observable<RegionDataset> {
-    return this.httpSvc.get<RegionDataset>(
+  ): Observable<any> {
+    return this.httpSvc.get<any>(
       this.baseUrl + country + '?from=' + startDate + '&to=' + toDate
     );
   }

@@ -10,7 +10,7 @@ export class ChartService {
 
   public constructor(private httpSvc: HttpClient) {}
 
-  private getChart(
+  public getChart(
     country: string,
     startDate: string,
     toDate: string
