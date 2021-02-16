@@ -2,7 +2,7 @@
 
 <mat-form-field appearance="fill">
   <mat-label>Choose a date</mat-label>
-  <input matInput [matDatepicker]="picker">
+  <input matInput [matDatepicker]="picker" [formControl]="dateControl" (dateChange)="dateChange($event)">
   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
 </mat-form-field>
@@ -11,7 +11,10 @@
 
 <div class="center">
   <mat-card class="map">
-    <span>Map</span><br>
-    <small>XXX</small>
+    <span>Map</span><br><br>
+    <img [src]="mapImage" alt="Map of infected" *ngIf="!isMapLoading; else noImageFound">
+    <ng-template #noImageFound>
+      <img src="/assets/loading.gif" alt="Please wait...">
+    </ng-template>
   </mat-card>
 </div>

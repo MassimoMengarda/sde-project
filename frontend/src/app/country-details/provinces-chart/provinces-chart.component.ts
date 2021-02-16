@@ -20,7 +20,7 @@ export class ProvincesChartComponent implements OnChanges {
   private endDate: string;
 
   public chartImage: any;
-  public isChartLoading: boolean;
+  public isChartLoading = true;
 
   public constructor(
     private datesMapperSvc: DatesMapperService,
