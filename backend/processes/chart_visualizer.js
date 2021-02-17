@@ -32,16 +32,19 @@ const handleChartRequest = async (req, res) => {
 async function handleChartResponse(res, region, from, to) {
     const query = `${utils.BASE_URL}/dates-mapper/${region}?from=${from}&to=${to}`;
     const fetchedData = await utils.fetchJSON(query);
-
-    // if (Object.keys(fetchedData).length === 0) {
-    //     return utils.handleError(res, 404, `No data has been found for date ${from}`);
-    // }
     
     const chartQuery = `${utils.BASE_URL}/chart-image/${region}?data=${JSON.stringify(fetchedData)}`;
     const chart = await fetch(chartQuery).then((resFetch) => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
+    }).catch(err => {
+        return undefined;
     });
+
+    if (chart === undefined) {
+        // TODO pass the error that we got from the lower levels
+        return utils.handleError(res, 500, 'Cannot reach QuickChart');
+    }
 
     // Set the right content type.
     console.log(`[CHART VISUALIZER] - Done\n`);

@@ -34,6 +34,10 @@ const handleMapRequest = async (req, res) => {
 async function handleMapResponse(res, region, locations) {
     // Retrieve the fields to pass to the mapquest API.
     const regionInfo = await getRegionInfo(region);
+    if (regionInfo === undefined) {
+        return utils.handleError(res, 500, `No info in database for region ${region}`)
+    }
+
     const mapLocations = getMapLocations(locations, regionInfo);
     console.log(`[MAPQUEST ADAPTER] - Fetching Map Quest API`);
     
@@ -42,7 +46,13 @@ async function handleMapResponse(res, region, locations) {
     const data = await fetch(query).then(resFetch => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
+    }).catch(err => {
+        return undefined;
     });
+
+    if (data === undefined) {
+        return utils.handleError(res, 500, 'Cannot reach MapQuest');
+    }
 
     // Set the right content type (without this, the map image is downloaded)
     // and send the data to the client.
@@ -52,17 +62,17 @@ async function handleMapResponse(res, region, locations) {
 
 // Function to retrieve all the necessary information of a region.
 async function getRegionInfo(region) {
-    // TODO we could have errors here
     const regionInfo = await utils.fetchJSON(`${utils.BASE_URL}/db-info/${region}`);
+    if (Object.keys(regionInfo).length === 0) {
+        return undefined;
+    }
 
-    const result = {
+    return {
         'region' : regionInfo.region,
         'center' : 'center=' + regionInfo.coordinates,
         'zoom' : 'zoom=' + getRegionZoom(regionInfo.area),
         'population' : regionInfo.population
-    }
-
-    return result;
+    };
 }
 
 // Function to compute the zoom of a region for the mapquest API.

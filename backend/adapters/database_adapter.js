@@ -53,7 +53,6 @@ function populateRegionsDatabase(database) {
             // Add information only if it is not present.
             if (entry === undefined || entry === null) {
                 // Wait due to the rate limit of the APIs.
-                // TODO, we could have some errors due to the rate limit, what to do?
                 setTimeout(() => addRegionInfo(database, region), 3000 * counter);
                 counter += 1;
             }

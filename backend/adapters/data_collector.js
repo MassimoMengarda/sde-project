@@ -12,7 +12,6 @@ const handleDataRequest = async (req, res) => {
     const inputRegions = regions.getRegions();
 
     // Check whether we need to get all the data or only by period or by date.
-    // TODO from e to separati??
     if (utils.isValidDate(date)) {
         console.log(`[DATA COLLECTOR] - Request for data in date ${date}\n`);
         await handleResponseByDate(res, date, inputRegions);
@@ -53,7 +52,7 @@ const handleDataByRegionRequest = async (req, res) => {
     }
 }
 
-// TODO return 404 if no data
+// TODO DISCUSS return 404 if no data
 // Function that fetches all the endpoints and process the data.
 async function handleResponseByDate(res, date, inputRegions) {
     console.log(`[DATA COLLECTOR] - Fetching all the endpoints`)
@@ -91,6 +90,8 @@ async function handleResponseAllData(res, inputRegions) {
     for (const region of inputRegions) {
         result[region] = await fetchEndPoint(region);
     }
+
+    // TODO DISCUSS we could have some errors, what to do?
 
     // Send the data to the client with response code 200.
     console.log(`[DATA COLLECTOR] - Done`);
@@ -140,6 +141,9 @@ async function getDataByDates(endPoint, from, to) {
         // Get dates between from and to.
         const dates = utils.getDatesBetween(from, to);
         const endPointData = await fetchEndPoint(endPoint);
+        if (endPointData === undefined) {
+            return undefined;
+        }
         
         const result = [];
         for (const entry of endPointData.data) {
@@ -153,8 +157,11 @@ async function getDataByDates(endPoint, from, to) {
 
 // Function that given the name of an endpoint, it fetches and returns the data.
 async function fetchEndPoint(endPoint) {
-    // TODO: here we could have error 500.
     const fetchedData = await utils.fetchJSON(`${utils.BASE_URL}/${endPoint}`);
+    if (Object.keys(fetchedData).length == 0) {
+        return undefined;
+    }
+
     const data = {data : fetchedData['result']};
 
     // Post data on database adapter.

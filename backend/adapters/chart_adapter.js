@@ -48,7 +48,13 @@ async function handleChartResponse(res, region, labels, data) {
     const chart = await fetch(`${BASE_URL}${JSON.stringify(params)}`).then((resFetch) => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
+    }).catch(err => {
+        return undefined;
     });
+
+    if (chart === undefined) {
+        return utils.handleError(res, 500, 'Cannot reach QuickChart');
+    }
 
     // Set the right content type (without this, the chart is downloaded)
     // and send the data to the client.

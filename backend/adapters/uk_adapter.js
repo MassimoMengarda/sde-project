@@ -19,6 +19,11 @@ const handleDataRequest = async (req, res) => {
     // Fetch and filter the data.
     const pages = parseInt(fetchedData.pagination.last.slice(-2).replace('=',''));
     const data = await filter(pages);
+    
+    if (data === undefined) {
+        return utils.handleError(res, 500, 'Cannot contact the UK database');
+    }
+
 
     // Send the data to the client wih response code 200.
     console.log(`[UK ADAPTER] - Done\n`);
@@ -36,6 +41,10 @@ async function filter(pages) {
 
         // Fetch the i-th page and parse it to json.
         const fetchedData = await utils.fetchJSON(query);
+        if (Object.keys(fetchedData).length === 0) {
+            return undefined;
+        }
+
         const entries = fetchedData.data;
 
         // Filter only data, province and cases.

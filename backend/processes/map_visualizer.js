@@ -36,7 +36,14 @@ async function handleMapResponse(res, region, date) {
     const map = await fetch(imageQuery).then(resFetch => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
+    }).catch(err => {
+        return undefined;
     });
+
+    if (map === undefined) {
+        // TODO pass the error that we got from the lower levels
+        return utils.handleError(res, 500, 'Cannot reach QuickChart');
+    }
 
     // Set the right content type.
     console.log(`[MAP VISUALIZER] - Done\n`);
