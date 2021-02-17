@@ -25,6 +25,7 @@ const handleDataRequest = async (req, res) => {
     }
 }
 
+// Function to handle the requests for a specific region. 
 const handleDataByRegionRequest = async (req, res) => {
     const region = req.params.region;
 
@@ -70,15 +71,10 @@ async function handleResponseByDate(res, date, inputRegions) {
 
 // Function to handle responses of periods of time.
 async function handleResponseByPeriod(res, from, to, inputRegions) {
-    // TODO move
-    // Order dates.
-    const initialDate = from <= to ? from : to;
-    const finalDate = from > to ? from : to;
-    
     // Prepare results.
     const result = {};
     for (const region of inputRegions) {
-        result[region] = await getDataByDates(region, initialDate, finalDate);
+        result[region] = await getDataByDates(region, from, to);
     }
 
     // Send the data to the client wih response code 200.
@@ -101,18 +97,48 @@ async function handleResponseAllData(res, inputRegions) {
     res.status(200).send(result);
 }
 
+// Function to handle the requests for the latest data. 
+const handleLatestDataRequest = async (req, res) => {
+    const region = req.params.region;
+
+    console.log(`[DATA COLLECTOR] - Request for latest data\n`);
+
+    // Check if region is valid, but we accept undefined.
+    if (region !== undefined && !regions.isValidRegion(region)) {
+        return utils.handleError(res, 400, `${region} is not a valid region`);
+    }
+
+    const inputRegions = region === undefined ? regions.getRegions() : [region];
+
+    await handleResponseLatest(res, inputRegions);
+}
+
+// Function to handle the responses for the latest data. 
+async function handleResponseLatest(res, inputRegions) {
+    // Fetch the endpoints.
+    const result = {}
+    for (const region of inputRegions) {
+        const query = `${utils.BASE_URL}/db/latest/${region}`
+        result[region] = await utils.fetchJSON(query);
+    }
+
+    // Send the data to the client with response code 200.
+    console.log(`[DATA COLLECTOR] - Done`);
+    res.status(200).send(result);
+}
+
 // Function that retieves region data by dates.
-async function getDataByDates(endPoint, initialDate, finalDate) {
+async function getDataByDates(endPoint, from, to) {
     // If final date is present I can assume all the dates before that are present too.
-    const inDB = await isInDB(endPoint, finalDate);
+    const inDB = await isInDB(endPoint, to);
     if (inDB) {
         // I know data is in the database.
-        const query = `${utils.BASE_URL}/db/${endPoint}?from=${initialDate}&to=${finalDate}`;
+        const query = `${utils.BASE_URL}/db/${endPoint}?from=${from}&to=${to}`;
         const dbEntries = await utils.fetchJSON(query);
         return dbEntries.result;
     } else {
-        // Get dates between initialDate and finalDate.
-        const dates = utils.getDatesBetween(initialDate, finalDate);
+        // Get dates between from and to.
+        const dates = utils.getDatesBetween(from, to);
         const endPointData = await fetchEndPoint(endPoint);
         
         const result = [];
@@ -155,5 +181,6 @@ async function isInDB(endPoint, date) {
 // Register endpoint.
 exports.register = app => {
     app.get('/data', handleDataRequest);
+    app.get('/data/latest/:region?', handleLatestDataRequest);
     app.get('/data/:region', handleDataByRegionRequest);
 };

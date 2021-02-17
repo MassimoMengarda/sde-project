@@ -35,10 +35,9 @@ function isValidDate(inputDate) {
 
 // Get range of dates between initialDate and finalDate.
 // initialDate should be smaller than finalDate
-// TODO order here, not for each call
-function getDatesBetween(initialDate, finalDate) {
-    initialDate = getDate(initialDate);
-    finalDate = getDate(finalDate);
+function getDatesBetween(from, to) {
+    const initialDate = from <= to ? from : to;
+    const finalDate = from > to ? from : to;
     
     // Return empty list if dates are not well-formed.
     if (initialDate === undefined || finalDate === undefined) {

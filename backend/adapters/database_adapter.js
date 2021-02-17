@@ -72,6 +72,36 @@ function addRegionInfo(database, region) {
     });
 }
 
+// Function to handle the requests for latest data.
+const handleSelectLatestRequest = async (req, res) => {
+    const region = req.params.region;
+    
+    console.log(`[DATABASE ADAPTER] - Region latest data request for region ${region}`);
+    
+    // Check if it is a valid region.
+    if (!regions.isValidRegion(region)) {
+        return utils.handleError(res, 400, `${region} is not a valid region`);
+    }
+
+    await handleSelectLatestResponse(res, region);
+}
+
+// Function to handle the responses for latest data.
+async function handleSelectLatestResponse(res, region) {
+    // Get the information in the DB.
+    const entry = await new Promise((resolve, reject) => {
+        databases[region].find({}).sort({date : -1}).limit(1).exec((err, entry) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(entry); 
+        });
+    });
+    
+    console.log(`[DATABASE ADAPTER] - Done\n`);
+    res.status(200).send(entry);
+}
+
 // Function to handle the select requests to the database.
 const handleSelectRequest = async (req, res) => {
     const region = req.params.region;
@@ -95,11 +125,7 @@ const handleSelectRequest = async (req, res) => {
 
 // Function to handle the select responses from the database.
 async function handleSelectResponse(res, region, from, to) {
-    // TODO move
-    // Order dates.
-    const initialDate = from <= to ? from : to;
-    const finalDate = from > to ? from : to;
-    const dates = utils.getDatesBetween(initialDate, finalDate);
+    const dates = utils.getDatesBetween(from, to);
 
     const result = [];
     
@@ -200,6 +226,7 @@ function insertNewData(db, data) {
 
 // Register endpoints.
 exports.register = (app) => {
+    app.get('/db/latest/:region?', handleSelectLatestRequest);
     app.get('/db/:region?', handleSelectRequest);
     app.post('/db/:region?', handleInsertRequest);
     app.get('/db-info/:region?', handleRegionInfoRequest);
