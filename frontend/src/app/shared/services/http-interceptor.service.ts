@@ -19,9 +19,11 @@ export class HttpInterceptorService implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error) => {
-        console.error(error);
-        this.router.navigateByUrl('/error');
-        return throwError(error.message);
+        if (!req.url.includes('map')) {
+          console.error(error);
+          this.router.navigateByUrl('/error');
+          return throwError(error.message);
+        }
       })
     );
   }
