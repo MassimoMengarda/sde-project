@@ -85,7 +85,7 @@ const handleSelectRequest = async (req, res) => {
     }
 
     // Need at least one date.
-    if (from === undefined || !utils.isValidDate(from) || !utils.isValidDate(to)) {
+    if (!utils.isValidDate(from) || !utils.isValidDate(to)) {
         return utils.handleError(res, 400, `${from} is not a valid date`);
     }
 

@@ -4,26 +4,63 @@ const regions = require('../utils/regions');
 
 // Function to handle the requests to the endpoint. 
 const handleDataRequest = async (req, res) => {
+    const date = utils.getDate(req.query.date);
+
     const from = utils.getDate(req.query.from);
     const to = utils.getDate(req.query.to);
 
-    // Check whether we need to get all the data or only by period.
-    if (from === undefined || to === undefined || !utils.isValidDate(from) || !utils.isValidDate(to)) {
+    const inputRegions = regions.getRegions();
+
+    // Check whether we need to get all the data or only by period or by date.
+    // TODO from e to separati??
+    if (utils.isValidDate(date)) {
+        console.log(`[DATA COLLECTOR] - Request for data in date ${date}\n`);
+        await handleResponseByDate(res, date, inputRegions);
+    } else if (utils.isValidDate(from) && utils.isValidDate(to)) {
+        console.log(`[DATA COLLECTOR] - Request for data between ${from} and ${to}\n`);
+        await handleResponseByPeriod(res, from, to, inputRegions);
+    } else {
         console.log(`[DATA COLLECTOR] - Request for all data\n`);
-        await handleResponseAllData(res);
-    } else {console.log(`[DATA COLLECTOR] - Request for data between ${from} and ${to}\n`);
-        await handleResponseByPeriod(res, from, to);
+        await handleResponseAllData(res, inputRegions);
     }
 }
 
+const handleDataByRegionRequest = async (req, res) => {
+    const region = req.params.region;
+
+    const date = utils.getDate(req.query.date);
+    const from = utils.getDate(req.query.from);
+    const to = utils.getDate(req.query.to);
+
+    // Check if region is valid.
+    if (!regions.isValidRegion(region)) {
+        return utils.handleError(res, 400, `${region} is not a valid region`);
+    }
+
+    const inputRegions = [region];
+
+    // Check whether we need to get all the data or only by period or by date.
+    if (utils.isValidDate(date)) {
+        console.log(`[DATA COLLECTOR] - Request for data in date ${date}\n`);
+        await handleResponseByDate(res, date, inputRegions);
+    } else if (utils.isValidDate(from) && utils.isValidDate(to)) {
+        console.log(`[DATA COLLECTOR] - Request for data between ${from} and ${to}\n`);
+        await handleResponseByPeriod(res, from, to, inputRegions);
+    } else {
+        console.log(`[DATA COLLECTOR] - Request for all data\n`);
+        await handleResponseAllData(res, inputRegions);
+    }
+}
+
+// TODO return 404 if no data
 // Function that fetches all the endpoints and process the data.
-async function handleResponseAllData(res) {
+async function handleResponseByDate(res, date, inputRegions) {
     console.log(`[DATA COLLECTOR] - Fetching all the endpoints`)
 
     // Fetch the endpoints.
     const result = {}
-    for (const region of regions.getRegions()) {
-        result[region] = await fetchEndPoint(region);
+    for (const region of inputRegions) {
+        result[region] = await getDataByDates(region, date, date);
     }
 
     // Send the data to the client with response code 200.
@@ -32,7 +69,7 @@ async function handleResponseAllData(res) {
 }
 
 // Function to handle responses of periods of time.
-async function handleResponseByPeriod(res, from, to) {
+async function handleResponseByPeriod(res, from, to, inputRegions) {
     // TODO move
     // Order dates.
     const initialDate = from <= to ? from : to;
@@ -40,11 +77,26 @@ async function handleResponseByPeriod(res, from, to) {
     
     // Prepare results.
     const result = {};
-    for (const region of regions.getRegions()) {
+    for (const region of inputRegions) {
         result[region] = await getDataByDates(region, initialDate, finalDate);
     }
 
     // Send the data to the client wih response code 200.
+    console.log(`[DATA COLLECTOR] - Done`);
+    res.status(200).send(result);
+}
+
+// Function that fetches all the endpoints and process the data.
+async function handleResponseAllData(res, inputRegions) {
+    console.log(`[DATA COLLECTOR] - Fetching all the endpoints`)
+
+    // Fetch the endpoints.
+    const result = {}
+    for (const region of inputRegions) {
+        result[region] = await fetchEndPoint(region);
+    }
+
+    // Send the data to the client with response code 200.
     console.log(`[DATA COLLECTOR] - Done`);
     res.status(200).send(result);
 }
@@ -103,4 +155,5 @@ async function isInDB(endPoint, date) {
 // Register endpoint.
 exports.register = app => {
     app.get('/data', handleDataRequest);
+    app.get('/data/:region', handleDataByRegionRequest);
 };
