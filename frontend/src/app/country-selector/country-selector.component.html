@@ -9,7 +9,7 @@
     <button mat-raised-button (click)="setCurrentCountry('IT')" [disabled]="currentCountry==='IT'">
       <img src="/assets/italyFlag.png" alt="Italy" height="30" />
       <span>Italy</span><br>
-      <!-- <small>{{ italyCases }} cases in the last 24 hours</small> -->
+      <!--TODO <small>{{ italyCases }} cases in the last 24 hours</small> -->
       <small>{{ italyCases }} cases on {{ date }}</small>
     </button>
     <button mat-raised-button (click)="setCurrentCountry('BG')" [disabled]="currentCountry==='BG'">
@@ -24,6 +24,8 @@
       <!-- <small>{{ UKCases }} cases in the last 24 hours</small> -->
       <small>{{ UKCases }} cases on {{ date }}</small>
     </button>
+    <br><br>
+    <p *ngIf="!currentCountry">Click on a state to see complete information such as cases divided by province, the day-by-day contagion chart and the map to view individual state situations</p>
   </div>
 
   <app-country-details [country]='currentCountry'></app-country-details>
