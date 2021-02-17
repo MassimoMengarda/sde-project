@@ -11,7 +11,9 @@
     "nedb": "^1.8.0",
     "node-fetch": "^2.6.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^0.1102.0"
+  },
   "scripts": {
     "start": "node backend/app.js",
     "test": "echo \"Error: no test specified\""
