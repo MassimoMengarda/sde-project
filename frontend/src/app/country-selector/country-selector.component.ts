@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
-import { concat } from 'rxjs';
 import { RegionMapperService } from 'src/app/shared/services/region-mapper.service';
 
 @Component({

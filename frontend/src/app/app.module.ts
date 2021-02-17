@@ -18,13 +18,23 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MapComponent } from './country-details/map/map.component';
 import { MatInputModule } from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
+import { HttpInterceptorService } from 'src/app/shared/services/http-interceptor.service';
+import { NetworkErrorComponent } from './network-error/network-error.component';
 
 
 
 @NgModule({
-  declarations: [AppComponent, HeaderComponent, CountrySelectorComponent, CountryDetailsComponent, ProvincesChartComponent, MapComponent],
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    CountrySelectorComponent,
+    CountryDetailsComponent,
+    ProvincesChartComponent,
+    MapComponent,
+    NetworkErrorComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -38,9 +48,16 @@ import { DatePipe } from '@angular/common';
     MatNativeDateModule,
     MatInputModule,
     MatCardModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [DatePipe],
+  providers: [
+    DatePipe,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptorService,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
