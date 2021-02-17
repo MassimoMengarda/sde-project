@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const regions = require('../utils/regions');
+const utils = require('../utils/utils');
 
 // https://quickchart.io/documentation/
 const BASE_URL = 'https://quickchart.io/chart?c=';
@@ -8,7 +9,9 @@ const BASE_URL = 'https://quickchart.io/chart?c=';
 const handleChartRequest = async (req, res) => {
     const region = req.params.region;
     const input = req.query.data;
-
+    
+    console.log(`[CHART ADAPTER] - Chart request for region ${region}`);
+    
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
         return utils.handleError(res, 400, `${region} is not a valid region`);
@@ -26,7 +29,6 @@ const handleChartRequest = async (req, res) => {
         return utils.handleError(res, 400, 'Bad input data');
     }
 
-    console.log(`[CHART ADAPTER] - Chart request for region ${region}`);
     await handleChartResponse(res, region, labels, data);
 }
 

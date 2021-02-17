@@ -9,12 +9,13 @@ const COUNTRIES_KEY = '2e0b2c19b3mshf16fe5d8d69f47dp17e29ejsnabd62970f152'; // T
 // Function to handle requests of information about the selected region.
 const handleRegionInfoRequest = async (req, res) => {
     const region = req.params.region;
-
+    
+    console.log(`[INFORMATION ADAPTER] - Request for region ${region}`);
+    
     if (!regions.isValidRegion(region)) {
         return utils.handleError(res, 400, `${region} is not a valid region`);
     }
     
-    console.log(`[INFORMATION ADAPTER] - Request for region ${region}`);
     await handleRegionInfoResponse(res, region);
 }
 
