@@ -14,12 +14,12 @@ const handleChartRequest = async (req, res) => {
     }
 
     // Check if from is well-defined.
-    if (from === undefined || !utils.isValidDate(from)) {
+    if (!utils.isValidDate(from)) {
         return utils.handleError(res, 400, `${from} is not a valid date`);
     }
 
     // Check if to is well-defined.
-    if (to === undefined || !utils.isValidDate(to)) {
+    if (!utils.isValidDate(to)) {
         return utils.handleError(res, 400, `${to} is not a valid date`);
     }
 

@@ -13,7 +13,7 @@ const handleMapRequest = async (req, res) => {
     }
 
     // Check if date is well-defined and not in the future.
-    if (date === undefined || !utils.isValidDate(date)) {
+    if (!utils.isValidDate(date)) {
         return utils.handleError(res, 400, `${date} is not a valid date`);
     }
 
