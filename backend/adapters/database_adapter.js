@@ -75,21 +75,21 @@ function addRegionInfo(database, region) {
 // Function to handle the select requests to the database.
 const handleSelectRequest = async (req, res) => {
     const region = req.params.region;
-    
     const from = utils.getDate(req.query.from);
     const to = req.query.to === undefined ? from : utils.getDate(req.query.to);
 
+    console.log(`[DATABASE ADAPTER] - Select request for region ${region} and dates ${from} ${to}`);
+    
     // Check the given region is valid.
     if (!regions.isValidRegion(region)) {
         return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // Need at least one date.
-    if (from === undefined || !utils.isValidDate(from) || !utils.isValidDate(to)) {
+    if (!utils.isValidDate(from) || !utils.isValidDate(to)) {
         return utils.handleError(res, 400, `${from} is not a valid date`);
     }
 
-    console.log(`[DATABASE ADAPTER] - Select request for region ${region} and dates ${from} ${to}`);
     await handleSelectResponse(res, region, from, to);
 }
 
@@ -131,7 +131,9 @@ async function handleSelectResponse(res, region, from, to) {
 const handleInsertRequest = async (req, res) => {
     const region = req.params.region;
     const data = req.body.data;
-
+    
+    console.log(`[DATABASE ADAPTER] - Insert request for region ${region}`);
+    
     // Check if the region is supported.
     if (!regions.isValidRegion(region)) {
         return utils.handleError(res, 400, `${region} is not a valid region`);
@@ -142,7 +144,6 @@ const handleInsertRequest = async (req, res) => {
         return utils.handleError(res, 400, 'No data was received');
     }
 
-    console.log(`[DATABASE ADAPTER] - Insert request for region ${region}`);
     await handleInsertResponse(res, region, data);
 }
 
@@ -158,13 +159,14 @@ async function handleInsertResponse(res, region, data) {
 // Function to handle the requests of information about a region.
 const handleRegionInfoRequest = async (req, res) => {
     const region = req.params.region;
-
+    
+    console.log(`[DATABASE ADAPTER] - Region info request for region ${region}`);
+    
     // Check if it is a valid region.
     if (!regions.isValidRegion(region)) {
         return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
-    console.log(`[DATABASE ADAPTER] - Region info request for region ${region}`);
     await handleRegionInfoResponse(res, region);
 }
 

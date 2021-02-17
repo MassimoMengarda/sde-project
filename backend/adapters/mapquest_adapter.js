@@ -10,7 +10,9 @@ const MAPS_SIZE = 'size=@2x';
 const handleMapRequest = async (req, res) => {
     const region = req.params.region;
     const input = req.query.data;
-
+    
+    console.log(`[MAPQUEST ADAPTER] - Map request for region ${region}`);
+    
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
         return utils.handleError(res, 400, `${region} is not a valid region`);
@@ -25,7 +27,6 @@ const handleMapRequest = async (req, res) => {
         return utils.handleError(res, 400, 'Bad input data');
     }
 
-    console.log(`[MAPQUEST ADAPTER] - Map request for region ${region}`);
     await handleMapResponse(res, region, locations);
 }
 

@@ -6,18 +6,19 @@ const regions = require('../utils/regions');
 const handleMapRequest = async (req, res) => {
     const region = req.params.region;
     const date = utils.getDate(req.query.date);
-
+    
+    console.log(`[MAP VISUALIZER] - Map request for region ${region} and date ${date}`);
+    
     // Check if region is valid.
     if (!regions.isValidRegion(region)) {
         return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
     // Check if date is well-defined and not in the future.
-    if (date === undefined || !utils.isValidDate(date)) {
+    if (!utils.isValidDate(date)) {
         return utils.handleError(res, 400, `${date} is not a valid date`);
     }
 
-    console.log(`[MAP VISUALIZER] - Map request for region ${region} and date ${date}`);
     await handleMapResponse(res, region, date);
 }
 
@@ -27,14 +28,11 @@ async function handleMapResponse(res, region, date) {
     const fetchedData = await utils.fetchJSON(query);
 
     // Check if no data has been provided.
-    if (Object.keys(fetchedData).length === 0 || fetchedData[region].length === 0) {
-        return utils.handleError(res, 404, `No data has been found for date ${date}`);
-    }
+    // if (Object.keys(fetchedData).length === 0 || fetchedData[region].length === 0) {
+    //     return utils.handleError(res, 404, `No data has been found for date ${date}`);
+    // }
     
-    const provinces = fetchedData[region][0].provinces;
-    const locations = locationsMapper(provinces);
-    
-    const imageQuery = `${utils.BASE_URL}/map-image/${region}?data=${locations}`;
+    const imageQuery = `${utils.BASE_URL}/map-image/${region}?data=${JSON.stringify(fetchedData)}`;
     const map = await fetch(imageQuery).then(resFetch => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
@@ -43,16 +41,6 @@ async function handleMapResponse(res, region, date) {
     // Set the right content type.
     console.log(`[MAP VISUALIZER] - Done\n`);
     res.set('Content-Type', 'image/png').status(200).send(map);
-}
-
-// Function to format the data as location name => number of cases
-// and return it as string.
-function locationsMapper(data) {
-    const result = [];
-    for (const key in data) {
-        result.push([key, data[key].cases]);
-    }
-    return JSON.stringify(result);
 }
 
 // Register endpoint.
