@@ -1,10 +1,9 @@
 const fetch = require('node-fetch');
 const regions = require('../utils/regions');
+const secret = require('../secret');
 
 const COUNTRIES_BASE_URL = 'https://countries-cities.p.rapidapi.com/location/country/';
 const WIKI_BASE_URL = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=coordinates&titles=';
-
-const COUNTRIES_KEY = '2e0b2c19b3mshf16fe5d8d69f47dp17e29ejsnabd62970f152'; // TODO move to better file
 
 // Function to handle requests of information about the selected region.
 const handleRegionInfoRequest = async (req, res) => {
@@ -63,7 +62,7 @@ async function getAreaAndPopulation(region) {
     // Add also the needed headers.
     const data = await fetch(COUNTRIES_BASE_URL + region, {
                     headers : {
-                        'x-rapidapi-key': COUNTRIES_KEY,
+                        'x-rapidapi-key': secret.COUNTRIES_KEY,
                         'x-rapidapi-host': 'countries-cities.p.rapidapi.com',
                         'useQueryString': 'true'
                     }

@@ -1,9 +1,9 @@
 const fetch = require('node-fetch');
 const utils = require('../utils/utils');
 const regions = require('../utils/regions');
+const secret = require('../secret');
 
 const BASE_URL = 'https://www.mapquestapi.com/staticmap/v5/map?';
-const KEY = 'key=msjfZTaaaRwasQi8K3jplvGnZBUvPFA0'; // Move to a better file.
 const MAPS_SIZE = 'size=@2x';
 
 // Function to handle the requests for the endpoint.
@@ -42,7 +42,7 @@ async function handleMapResponse(res, region, locations) {
     console.log(`[MAPQUEST ADAPTER] - Fetching Map Quest API`);
     
     // Fetch the data in the html page, concatenating the URL.
-    const query = `${BASE_URL}${KEY}&${MAPS_SIZE}&${regionInfo.zoom}&${regionInfo.center}${mapLocations}`;
+    const query = `${BASE_URL}${secret.MAPQUEST_KEY}&${MAPS_SIZE}&${regionInfo.zoom}&${regionInfo.center}${mapLocations}`;
     const data = await fetch(query).then(resFetch => {
         // .buffer() because we receive an image from fetch function.
         return resFetch.buffer();
