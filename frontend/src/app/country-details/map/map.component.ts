@@ -16,6 +16,8 @@ export class MapComponent implements OnChanges {
 
   public dateControl: FormControl;
 
+  public maxDateToSelect = new Date();
+
   public constructor(private mapSvc: MapService, private datePipe: DatePipe) {
     const today = new Date();
     const day = today.getDay() + 14;
@@ -23,7 +25,7 @@ export class MapComponent implements OnChanges {
     const year = today.getFullYear();
 
     this.dateControl = new FormControl(new Date(year, month, day - 1));
-
+    this.maxDateToSelect.setDate(today.getDate() - 1);
   }
 
   public ngOnChanges(): void {

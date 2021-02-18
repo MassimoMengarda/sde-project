@@ -22,6 +22,8 @@ export class ProvincesChartComponent implements OnChanges {
   public chartImage: any;
   public isChartLoading = true;
 
+  public maxDateToSelect = new Date();
+
   public constructor(
     private datesMapperSvc: DatesMapperService,
     private chartSvc: ChartService,
@@ -36,9 +38,12 @@ export class ProvincesChartComponent implements OnChanges {
       start: new FormControl(new Date(year, month, day - 7)),
       end: new FormControl(new Date(year, month, day - 2)),
     });
+
+    this.maxDateToSelect.setDate(today.getDate() - 1);
   }
 
   public ngOnChanges(): void {
+    debugger;
     this.getInitialDateRange();
 
     this.selectCountry();
