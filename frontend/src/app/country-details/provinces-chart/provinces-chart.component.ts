@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ChartService } from 'src/app/shared/services/chart.service';
 import { DatesMapperService } from 'src/app/shared/services/dates-mapper.service';
 
@@ -43,7 +42,6 @@ export class ProvincesChartComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    // debugger;
     this.getInitialDateRange();
 
     this.selectCountry();
@@ -61,16 +59,10 @@ export class ProvincesChartComponent implements OnChanges {
     //Svuoto nel caso ci siano dentro le vecchie entries di altri stati
     this.provincesBox.clear();
 
-    if (this.country === 'Italy') {
-      this.getItalyCasesAndChart(this.startDate, this.endDate);
-    } else if (this.country === 'Belgium') {
-      this.getBelgiumCasesAndChart(this.startDate, this.endDate);
-    } else {
-      this.getUKCasesAndChart(this.startDate, this.endDate);
-    }
+    this.getCasesAndChart();
   }
 
-  public startChange(event): void {
+  public startChange(): void {
     this.startDate = this.datePipe.transform(
       this.range.value.start,
       'yyyy-MM-dd'
@@ -86,78 +78,61 @@ export class ProvincesChartComponent implements OnChanges {
     }
   }
 
-  private getItalyCasesAndChart(startDate: string, endDate: string) {
-    this.datesMapperSvc.getItalyData(startDate, endDate).subscribe((res) => {
-      const cases: number[] = [];
+  private getCasesAndChart() {
+    this.datesMapperSvc
+      .getData(this.country.toLowerCase(), this.startDate, this.endDate)
+      .subscribe((res) => {
+        const cases: number[] = [];
+        const currentCountry = this.country.toLowerCase();
 
-      // Inizializzo array
-      for (let p in res.italy[0].provinces) {
-        cases[p] = 0;
-      }
+        // Inizializzo
+        for (let p in res[currentCountry][0].provinces) {
+          cases[p] = 0;
+        }
 
-      // Sommo i casi giorno per giorno (per ogni prov)
-      res.italy.forEach(day => {
-        for (let p in day.provinces) {
-          cases[p] += day.provinces[p].cases;
-          // TODO: set necessario solo ultima volta, trovare modo per non fare un altro ciclo for
-          this.provincesBox.set(p, cases[p]);
-      }
+        // Sommo i casi giorno per giorno (per ogni prov)
+        res[currentCountry].forEach((day) => {
+          for (let p in day.provinces) {
+            cases[p] += day.provinces[p].cases;
+            // TODO: set necessario solo ultima volta, trovare modo per non fare un altro ciclo for
+            this.provincesBox.set(p, cases[p]);
+          }
+        });
+
+        // Trucco per evitare l'errore "change view in html"
+        this.provincesEntries = Array.from(this.provincesBox.entries());
       });
-
-      // Trucco per evitare l'errore "change view in html"
-      this.provincesEntries = Array.from(this.provincesBox.entries());
-    });
     this.getChart();
   }
 
   private getChart() {
     this.isChartLoading = true;
-    this.chartSvc.getChart(this.country.toLowerCase(), this.startDate, this.endDate).subscribe(
-      (data) => {
-        this.createImageFromBlob(data);
-        this.isChartLoading = false;
-      },
-      (error) => {
-        this.isChartLoading = false;
-        console.log(error);
-      }
-    );
-  }
-
-  private getBelgiumCasesAndChart(startDate: string, endDate: string) {
-    this.datesMapperSvc.getBelgiumData(startDate, endDate).subscribe((res) => {
-      const provinces = res.belgium[0].provinces;
-      for (let p in provinces) {
-        this.provincesBox.set(p, provinces[p].cases);
-      }
-
-      // Trucco per evitare l'errore "change view in html"
-      this.provincesEntries = Array.from(this.provincesBox.entries());
-    });
-    this.getChart();
-  }
-
-  private getUKCasesAndChart(startDate: string, endDate: string) {
-    this.datesMapperSvc.getUKData(startDate, endDate).subscribe((res) => {
-      const provinces = res.uk[0].provinces;
-      for (let p in provinces) {
-        this.provincesBox.set(p, provinces[p].cases);
-      }
-
-      // Trucco per evitare l'errore "change view in html"
-      this.provincesEntries = Array.from(this.provincesBox.entries());
-    });
-    this.getChart();
+    this.chartSvc
+      .getChart(this.country.toLowerCase(), this.startDate, this.endDate)
+      .subscribe(
+        (data) => {
+          this.createImageFromBlob(data);
+          this.isChartLoading = false;
+        },
+        (error) => {
+          this.isChartLoading = false;
+          console.log(error);
+        }
+      );
   }
 
   private createImageFromBlob(image: Blob) {
     let reader = new FileReader();
-    reader.addEventListener("load", () => {
-       this.chartImage = reader.result;
-    }, false);
+    reader.addEventListener(
+      'load',
+      () => {
+        this.chartImage = reader.result;
+      },
+      false
+    );
 
     if (image) {
-       reader.readAsDataURL(image);
+      reader.readAsDataURL(image);
     }
- }
+  }
 }
