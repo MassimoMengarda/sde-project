@@ -43,7 +43,7 @@ export class ProvincesChartComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    debugger;
+    // debugger;
     this.getInitialDateRange();
 
     this.selectCountry();
@@ -88,15 +88,24 @@ export class ProvincesChartComponent implements OnChanges {
 
   private getItalyCasesAndChart(startDate: string, endDate: string) {
     this.datesMapperSvc.getItalyData(startDate, endDate).subscribe((res) => {
-      const provinces = res.italy[0].provinces;
-      for (let p in provinces) {
-        // console.log('P: ' + p + ' ' + provinces[p].cases);
-        this.provincesBox.set(p, provinces[p].cases);
+      const cases: number[] = [];
+
+      // Inizializzo array
+      for (let p in res.italy[0].provinces) {
+        cases[p] = 0;
       }
+
+      // Sommo i casi giorno per giorno (per ogni prov)
+      res.italy.forEach(day => {
+        for (let p in day.provinces) {
+          cases[p] += day.provinces[p].cases;
+          // TODO: set necessario solo ultima volta, trovare modo per non fare un altro ciclo for
+          this.provincesBox.set(p, cases[p]);
+      }
+      });
 
       // Trucco per evitare l'errore "change view in html"
       this.provincesEntries = Array.from(this.provincesBox.entries());
-
     });
     this.getChart();
   }

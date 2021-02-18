@@ -7,7 +7,7 @@ import { RegionDataset } from 'src/app/shared/models/region-dataset.model';
   providedIn: 'root',
 })
 export class DatesMapperService {
-  private baseUrl = 'http://localhost:8080/dates-mapper/';
+  private baseUrl = 'http://localhost:8080/data/';
 
   public constructor(private httpSvc: HttpClient) {}
 
