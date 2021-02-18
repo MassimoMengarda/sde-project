@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MapService } from 'src/app/shared/services/map.service';
 
@@ -30,7 +30,10 @@ export class MapComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.getInitialDateRange();
+    this.getMapImage();
+  }
 
+  private getMapImage() {
     this.isMapLoading = true;
     this.mapImage = '';
     this.mapSvc.getMap(this.country.toLowerCase(), this.date).subscribe(
@@ -63,5 +66,4 @@ export class MapComponent implements OnChanges {
        reader.readAsDataURL(image);
     }
  }
-
 }

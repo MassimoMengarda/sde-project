@@ -13,7 +13,7 @@ export class ProvincesChartComponent implements OnChanges {
   @Input() country: string;
   public range: FormGroup;
   public provincesBox = new Map<string, number>();
-  public provincesEntries;
+  public provincesEntries: any;
 
   private startDate: string;
   private endDate: string;
@@ -43,7 +43,6 @@ export class ProvincesChartComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.getInitialDateRange();
-
     this.selectCountry();
   }
 
@@ -58,7 +57,6 @@ export class ProvincesChartComponent implements OnChanges {
   private selectCountry() {
     //Svuoto nel caso ci siano dentro le vecchie entries di altri stati
     this.provincesBox.clear();
-
     this.getCasesAndChart();
   }
 
