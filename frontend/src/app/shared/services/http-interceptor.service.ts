@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 export class HttpInterceptorService implements HttpInterceptor {
   public constructor(public router: Router) {}
 
+  // Function to intercept possible network error
   public intercept(
     req: HttpRequest<any>,
     next: HttpHandler

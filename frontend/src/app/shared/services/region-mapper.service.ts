@@ -11,6 +11,7 @@ export class RegionMapperService {
 
   public constructor(private httpSvc: HttpClient) {}
 
+  // Function to gets the latest data
   private getRegionData(region: string): Observable<RegionDataset> {
     return this.httpSvc.get<RegionDataset>(
       this.baseUrl + 'data/latest/' + region

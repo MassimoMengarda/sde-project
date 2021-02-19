@@ -9,11 +9,14 @@ import { MapService } from 'src/app/shared/services/map.service';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnChanges {
+  // Input value from country-details component
   @Input() country: string;
+
   public date: string;
   public mapImage: any;
   public isMapLoading = true;
 
+  // Control of date picker
   public dateControl: FormControl;
 
   public maxDateToSelect = new Date();
@@ -24,15 +27,24 @@ export class MapComponent implements OnChanges {
     const month = today.getMonth();
     const year = today.getFullYear();
 
+    // Set yesterday's date, setting the maximum date in the date picker
+    // to yesterday: it is not possible to get today's map because today's
+    // data is not yet available
     this.dateControl = new FormControl(new Date(year, month, day - 1));
     this.maxDateToSelect.setDate(today.getDate() - 1);
   }
 
   public ngOnChanges(): void {
-    this.getInitialDateRange();
+    this.getInitialDate();
     this.getMapImage();
   }
 
+  // Function to gets the date from date picker
+  private getInitialDate() {
+    this.date = this.datePipe.transform(this.dateControl.value, 'yyyy-MM-dd');
+  }
+
+  // Function to retrieves the map image using the map service
   private getMapImage() {
     this.isMapLoading = true;
     this.mapImage = '';
@@ -48,14 +60,12 @@ export class MapComponent implements OnChanges {
     );
   }
 
-  private getInitialDateRange() {
-    this.date = this.datePipe.transform(this.dateControl.value, 'yyyy-MM-dd');
-  }
-
+  // Function to intercepets the date changes and update 'date' variable
   public dateChange(event) {
     this.date = this.datePipe.transform(event.value, 'yyyy-MM-dd');
   }
 
+  // Support function to transfor the blob into an image
   private createImageFromBlob(image: Blob) {
     let reader = new FileReader();
     reader.addEventListener("load", () => {

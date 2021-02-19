@@ -10,6 +10,7 @@ export class DatesMapperService {
 
   public constructor(private httpSvc: HttpClient) {}
 
+  // Function to gets all data given a date range
   public getData(
     country: string,
     startDate: string,

@@ -20,6 +20,7 @@ export class CountrySelectorComponent implements OnInit {
     this.getLast24hCases();
   }
 
+  // Function to gets the latest available cases
   private getLast24hCases() {
     this.regionMapperSvc.getCases().subscribe((res) => {
       this.italyCases = res[0].italy[0].cases;
@@ -29,6 +30,7 @@ export class CountrySelectorComponent implements OnInit {
     });
   }
 
+  // Function to set teh current country, used by template
   public setCurrentCountry(country: string): void {
     this.currentCountry = country;
   }

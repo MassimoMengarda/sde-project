@@ -10,6 +10,7 @@ export class ChartService {
 
   public constructor(private httpSvc: HttpClient) {}
 
+  // Function to gets the chart image
   public getChart(
     country: string,
     startDate: string,

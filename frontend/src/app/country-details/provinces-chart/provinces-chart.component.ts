@@ -10,9 +10,16 @@ import { DatesMapperService } from 'src/app/shared/services/dates-mapper.service
   styleUrls: ['./provinces-chart.component.scss'],
 })
 export class ProvincesChartComponent implements OnChanges {
+  // Input value from country-selector component
   @Input() country: string;
+
+  // Control of date range picker
   public range: FormGroup;
+
+  // Data strucuture used to save the pair <province, cases per province>
   public provincesBox = new Map<string, number>();
+
+  // Array used from template to display the content of provincesBox
   public provincesEntries: any;
 
   private startDate: string;
@@ -33,11 +40,15 @@ export class ProvincesChartComponent implements OnChanges {
     const month = today.getMonth();
     const year = today.getFullYear();
 
+    // Set the start date to 7 days before today and the end date to the day before yesterday.
+    // Thanks to this, the component shows the data of the last week
     this.range = new FormGroup({
       start: new FormControl(new Date(year, month, day - 7)),
       end: new FormControl(new Date(year, month, day - 2)),
     });
 
+    // Set the max date to select to yesterday, because today's
+    // data is not yet available
     this.maxDateToSelect.setDate(today.getDate() - 1);
   }
 
@@ -46,6 +57,7 @@ export class ProvincesChartComponent implements OnChanges {
     this.selectCountry();
   }
 
+  // Function to gets the date range from date picker
   private getInitialDateRange() {
     this.startDate = this.datePipe.transform(
       this.range.value.start,
@@ -55,17 +67,20 @@ export class ProvincesChartComponent implements OnChanges {
   }
 
   private selectCountry() {
-    //Svuoto nel caso ci siano dentro le vecchie entries di altri stati
+    // Empty the structure if still contains the previous data from the previous country
     this.provincesBox.clear();
     this.getCasesAndChart();
   }
 
+  // Function to intercepets the start date changes and update 'startDate' variable
   public startChange(): void {
     this.startDate = this.datePipe.transform(
       this.range.value.start,
       'yyyy-MM-dd'
     );
   }
+
+  // Function to intercepets the end date changes and update 'endDate' variable
   public endChange(event): void {
     if (event.value) {
       this.endDate = this.datePipe.transform(
@@ -76,6 +91,7 @@ export class ProvincesChartComponent implements OnChanges {
     }
   }
 
+  // Function to retrieves the cases per province
   private getCasesAndChart() {
     this.datesMapperSvc
       .getData(this.country.toLowerCase(), this.startDate, this.endDate)
@@ -83,12 +99,12 @@ export class ProvincesChartComponent implements OnChanges {
         const cases: number[] = [];
         const currentCountry = this.country.toLowerCase();
 
-        // Inizializzo
+        // Initialize the array to 0
         for (let p in res[currentCountry][0].provinces) {
           cases[p] = 0;
         }
 
-        // Sommo i casi giorno per giorno (per ogni prov)
+        // Sum the cases day per day (for each province)
         res[currentCountry].forEach((day) => {
           for (let p in day.provinces) {
             cases[p] += day.provinces[p].cases;
@@ -97,12 +113,13 @@ export class ProvincesChartComponent implements OnChanges {
           }
         });
 
-        // Trucco per evitare l'errore "change view in html"
+        // For avoiding the "change view in html" error
         this.provincesEntries = Array.from(this.provincesBox.entries());
       });
     this.getChart();
   }
 
+  // Function to retrieve the chart image usign the chart service
   private getChart() {
     this.isChartLoading = true;
     this.chartSvc
@@ -119,6 +136,7 @@ export class ProvincesChartComponent implements OnChanges {
       );
   }
 
+  // Support function to transfor the blob into an image
   private createImageFromBlob(image: Blob) {
     let reader = new FileReader();
     reader.addEventListener(

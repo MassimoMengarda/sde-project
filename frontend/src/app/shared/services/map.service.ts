@@ -10,6 +10,7 @@ export class MapService {
 
   public constructor(private httpSvc: HttpClient) {}
 
+  // Function to gets the map image
   public getMap(country: string, date: string): Observable<Blob> {
     return this.httpSvc.get(this.baseUrl + country + '?date=' + date, {
       responseType: 'blob',
