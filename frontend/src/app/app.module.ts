@@ -22,6 +22,7 @@ import { HeaderComponent } from './header/header.component';
 import { MapComponent } from './country-details/map/map.component';
 import { NetworkErrorComponent } from './network-error/network-error.component';
 import { ProvincesChartComponent } from './country-details/provinces-chart/provinces-chart.component';
+import { RefreshComponent } from './refresh/refresh.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ProvincesChartComponent } from './country-details/provinces-chart/provi
     ProvincesChartComponent,
     MapComponent,
     NetworkErrorComponent,
+    RefreshComponent,
   ],
   imports: [
     BrowserModule,
