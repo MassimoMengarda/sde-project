@@ -96,6 +96,10 @@ async function handleSelectLatestResponse(res, region) {
             resolve(entry); 
         });
     });
+
+    if (entry === undefined || entry === null) {
+        return utils.handleError(res, 404, `No data can be found in database for region ${region}`);
+    }
     
     console.log(`[DATABASE ADAPTER] - Done\n`);
     res.status(200).send(entry);

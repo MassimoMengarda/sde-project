@@ -61,6 +61,9 @@ async function handleResponseByDate(res, date, inputRegions) {
     const result = {}
     for (const region of inputRegions) {
         result[region] = await getDataByDates(region, date, date);
+        if (result[region] === undefined) {
+            return utils.handleError(res, 500, 'Internal error, cannot fetch data');
+        }
     }
 
     // Send the data to the client with response code 200.
@@ -74,6 +77,9 @@ async function handleResponseByPeriod(res, from, to, inputRegions) {
     const result = {};
     for (const region of inputRegions) {
         result[region] = await getDataByDates(region, from, to);
+        if (result[region] === undefined) {
+            return utils.handleError(res, 500, 'Internal error, cannot fetch data');
+        }
     }
 
     // Send the data to the client wih response code 200.
@@ -89,9 +95,10 @@ async function handleResponseAllData(res, inputRegions) {
     const result = {}
     for (const region of inputRegions) {
         result[region] = await fetchEndPoint(region);
+        if (result[region] === undefined) {
+            return utils.handleError(res, 500, 'Internal error, cannot fetch data');
+        }
     }
-
-    // TODO DISCUSS we could have some errors, what to do?
 
     // Send the data to the client with response code 200.
     console.log(`[DATA COLLECTOR] - Done`);
@@ -121,6 +128,9 @@ async function handleResponseLatest(res, inputRegions) {
     for (const region of inputRegions) {
         const query = `${utils.BASE_URL}/db/latest/${region}`
         result[region] = await utils.fetchJSON(query);
+        if (Object.keys(result[region]).length === 0) {
+            return utils.handleError(res, 404, 'No data found in database');
+        }
     }
 
     // Send the data to the client with response code 200.
