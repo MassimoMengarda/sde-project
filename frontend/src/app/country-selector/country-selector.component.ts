@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { DataService } from 'src/app/shared/services/data.service';
 import { RegionMapperService } from 'src/app/shared/services/region-mapper.service';
 
 @Component({
@@ -14,7 +16,11 @@ export class CountrySelectorComponent implements OnInit {
   public latestBelgiumData: number;
   public latestUKData: number;
 
-  public constructor(private regionMapperSvc: RegionMapperService) {}
+  public constructor(
+    private regionMapperSvc: RegionMapperService,
+    private dataSvc: DataService,
+    private router: Router
+  ) {}
 
   public ngOnInit(): void {
     this.getLast24hCases();
@@ -22,12 +28,23 @@ export class CountrySelectorComponent implements OnInit {
 
   // Function to gets the latest available data
   private getLast24hCases() {
-    this.regionMapperSvc.getCases().subscribe((res) => {
-      this.latestItalyData = res[0].italy[0];
-      this.latestBelgiumData = res[1].belgium[0];
-      this.latestUKData = res[2].uk[0];
-      this.isInfoLoaded = true;
-    });
+    this.regionMapperSvc.getCases().subscribe(
+      (res) => {
+        this.latestItalyData = res[0].italy[0];
+        this.latestBelgiumData = res[1].belgium[0];
+        this.latestUKData = res[2].uk[0];
+        this.isInfoLoaded = true;
+      },
+      // If for any reason a country DB does not exists, all dbs are re-downloaded
+      (error) => {
+        if (error.includes('404')) {
+          this.router.navigateByUrl('/refresh');
+          this.dataSvc.refreshDB().subscribe(() => {
+            this.router.navigateByUrl('/');
+          });
+        }
+      }
+    );
   }
 
   // Function to set teh current country, used by template
