@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -57,6 +57,7 @@ import { RefreshComponent } from './refresh/refresh.component';
       useClass: HttpInterceptorService,
       multi: true,
     },
+    { provide: MAT_DATE_LOCALE, useValue: 'it' }
   ],
   bootstrap: [AppComponent],
 })
