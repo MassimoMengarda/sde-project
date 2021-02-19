@@ -145,7 +145,7 @@ async function handleSelectResponse(res, region, from, to) {
     }
 
     if (result.length == 0) {
-        return utils.handleError(res, 404, `No data has been found for date ${initialDate} in the database`);
+        return utils.handleError(res, 404, `No data has been found for date ${from} in the database`);
     }
     
     console.log(`[DATABASE ADAPTER] - Done\n`);
