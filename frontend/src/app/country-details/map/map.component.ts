@@ -6,7 +6,7 @@ import { MapService } from 'src/app/shared/services/map.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnChanges {
   // Input value from country-details component
@@ -21,7 +21,16 @@ export class MapComponent implements OnChanges {
 
   public maxDateToSelect = new Date();
 
-  public constructor(private mapSvc: MapService, private datePipe: DatePipe) {
+  public constructor(private mapSvc: MapService, private datePipe: DatePipe) {}
+
+  public ngOnChanges(): void {
+    this.initDateFormControl();
+    this.getInitialDate();
+    this.getMapImage();
+  }
+
+  // Function to initialize the date picker form control
+  private initDateFormControl() {
     const today = new Date();
     const day = today.getDay() + 14;
     const month = today.getMonth();
@@ -30,13 +39,13 @@ export class MapComponent implements OnChanges {
     // Set yesterday's date, setting the maximum date in the date picker
     // to yesterday: it is not possible to get today's map because today's
     // data is not yet available
-    this.dateControl = new FormControl(new Date(year, month, day - 1));
-    this.maxDateToSelect.setDate(today.getDate() - 1);
-  }
-
-  public ngOnChanges(): void {
-    this.getInitialDate();
-    this.getMapImage();
+    if (this.country.toLowerCase().includes('belgium')) {
+      this.dateControl = new FormControl(new Date(year, month, day - 2));
+      this.maxDateToSelect.setDate(today.getDate() - 2);
+    } else {
+      this.dateControl = new FormControl(new Date(year, month, day - 1));
+      this.maxDateToSelect.setDate(today.getDate() - 1);
+    }
   }
 
   // Function to gets the date from date picker
@@ -68,12 +77,16 @@ export class MapComponent implements OnChanges {
   // Support function to transfor the blob into an image
   private createImageFromBlob(image: Blob) {
     let reader = new FileReader();
-    reader.addEventListener("load", () => {
-       this.mapImage = reader.result;
-    }, false);
+    reader.addEventListener(
+      'load',
+      () => {
+        this.mapImage = reader.result;
+      },
+      false
+    );
 
     if (image) {
-       reader.readAsDataURL(image);
+      reader.readAsDataURL(image);
     }
- }
+  }
 }
