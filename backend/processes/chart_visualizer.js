@@ -32,6 +32,11 @@ const handleChartRequest = async (req, res) => {
 async function handleChartResponse(res, region, from, to) {
     const query = `${utils.BASE_URL}/dates-mapper/${region}?from=${from}&to=${to}`;
     const fetchedData = await utils.fetchJSON(query);
+
+    // Check if no data has been provided.
+    if (Object.keys(fetchedData).length === 0) {
+        return utils.handleError(res, 404, `No data has been found for dates ${from} or ${to}`);
+    }
     
     const chartQuery = `${utils.BASE_URL}/chart-image/${region}?data=${JSON.stringify(fetchedData)}`;
     const chart = await fetch(chartQuery).then((resFetch) => {

@@ -28,9 +28,9 @@ async function handleMapResponse(res, region, date) {
     const fetchedData = await utils.fetchJSON(query);
 
     // Check if no data has been provided.
-    // if (Object.keys(fetchedData).length === 0 || fetchedData[region].length === 0) {
-    //     return utils.handleError(res, 404, `No data has been found for date ${date}`);
-    // }
+    if (Object.keys(fetchedData).length === 0) {
+        return utils.handleError(res, 404, `No data has been found for date ${date}`);
+    }
     
     const imageQuery = `${utils.BASE_URL}/map-image/${region}?data=${JSON.stringify(fetchedData)}`;
     const map = await fetch(imageQuery).then(resFetch => {
