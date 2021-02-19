@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChartService {
   private baseUrl = 'http://localhost:8080/chart/';
@@ -16,7 +16,8 @@ export class ChartService {
     toDate: string
   ): Observable<Blob> {
     return this.httpSvc.get(
-      this.baseUrl + country + '?from=' + startDate + '&to=' + toDate, { responseType: 'blob' }
+      this.baseUrl + country + '?from=' + startDate + '&to=' + toDate,
+      { responseType: 'blob' }
     );
   }
 

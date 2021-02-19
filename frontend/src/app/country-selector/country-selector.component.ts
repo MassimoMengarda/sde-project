@@ -17,6 +17,10 @@ export class CountrySelectorComponent implements OnInit {
   public constructor(private regionMapperSvc: RegionMapperService) {}
 
   public ngOnInit(): void {
+    this.getLast24hCases();
+  }
+
+  private getLast24hCases() {
     this.regionMapperSvc.getCases().subscribe((res) => {
       this.italyCases = res[0].italy[0].cases;
       this.belgiumCases = res[1].belgium[0].cases;
