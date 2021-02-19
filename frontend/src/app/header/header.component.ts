@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { DataService } from 'src/app/shared/services/data.service';
 
 @Component({
   selector: 'app-header',
@@ -8,8 +6,5 @@ import { DataService } from 'src/app/shared/services/data.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
-
-  public constructor(private dataSvc: DataService, private router: Router) { }
-
-
+  public constructor() {}
 }

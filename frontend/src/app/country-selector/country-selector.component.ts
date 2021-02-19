@@ -52,6 +52,7 @@ export class CountrySelectorComponent implements OnInit {
     this.currentCountry = country;
   }
 
+  // Function to refresh DB data
   public refreshData(): void {
     this.router.navigateByUrl('/refresh');
     this.dataSvc.refreshDB().subscribe(() => {

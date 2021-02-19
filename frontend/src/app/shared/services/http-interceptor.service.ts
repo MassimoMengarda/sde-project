@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class HttpInterceptorService implements HttpInterceptor {
+  public isInErrorMode = false;
+
   public constructor(public router: Router) {}
 
   // Function to intercept possible network error
