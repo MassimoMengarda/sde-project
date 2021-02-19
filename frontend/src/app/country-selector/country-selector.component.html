@@ -1,8 +1,11 @@
 <div *ngIf='!isInfoLoaded' class="loader-div">
-  <img src="/assets/loading.gif" alt="Loading" >
+  <img src="/assets/loading.gif" alt="Loading">
   <p>Loading Covid19 data, please wait...</p>
 </div>
 <div *ngIf='isInfoLoaded'>
+  <a (click)="refreshData()" class="refresh">Click here to refresh DB data <img src="/assets/refresh.png" height="30px"
+      class="refresh-icon"></a>
+  <br><br>
   <div class="center">
     <h3>Latest available data by country</h3>
     <button mat-raised-button (click)="setCurrentCountry('IT')" [disabled]="currentCountry==='IT'">
@@ -21,7 +24,8 @@
       <small>{{ latestUKData.cases }} cases on {{ latestUKData.date | date: 'dd/MM/yyyy'}}</small>
     </button>
     <br><br>
-    <p *ngIf="!currentCountry">Click on a state to see complete information such as cases divided by province, the day-by-day contagion chart and the map to view individual state situations</p>
+    <p *ngIf="!currentCountry">Click on a state to see complete information such as cases divided by province, the
+      day-by-day contagion chart and the map to view individual state situations</p>
   </div>
 
   <app-country-details [country]='currentCountry'></app-country-details>
