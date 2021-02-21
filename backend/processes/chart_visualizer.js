@@ -47,7 +47,6 @@ async function handleChartResponse(res, region, from, to) {
     });
 
     if (chart === undefined) {
-        // TODO pass the error that we got from the lower levels
         return utils.handleError(res, 500, 'Cannot reach QuickChart');
     }
 

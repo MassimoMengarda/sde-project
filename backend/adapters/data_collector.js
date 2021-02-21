@@ -52,7 +52,6 @@ const handleDataByRegionRequest = async (req, res) => {
     }
 }
 
-// TODO DISCUSS return 404 if no data
 // Function that fetches all the endpoints and process the data.
 async function handleResponseByDate(res, date, inputRegions) {
     console.log(`[DATA COLLECTOR] - Fetching all the endpoints`)
