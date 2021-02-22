@@ -27,7 +27,7 @@ const handleDataRequest = async (req, res) => {
 
     // Send the data to the client wih response code 200.
     console.log(`[UK ADAPTER] - Done\n`);
-    res.status(200).send({result: data});
+    res.status(200).send({'uk': data});
 }
 
 // Function to retrieve and filter the data.

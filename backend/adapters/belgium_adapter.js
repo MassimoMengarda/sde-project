@@ -12,13 +12,12 @@ const handleDataRequest = async (req, res) => {
     if (Object.keys(fetchedData).length === 0) {
         return utils.handleError(res, 500, `Cannot contact belgian database\n`);
     }
-    
-    // Filter the results.
-    const data = {result : filter(fetchedData)};
+
+    const data = filter(fetchedData)
     
     // Send the data to the client wih response code 200.
     console.log(`[BELGIUM ADAPTER] - Done\n`);
-    res.status(200).send(data);
+    res.status(200).send({'belgium' : data});
 }
 
 // Function to filter the retrieved data.

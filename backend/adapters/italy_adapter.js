@@ -38,7 +38,9 @@ const handleDataRequest = async (req, res) => {
             }
         }
         // Filter the data.
-        return { result: filter(result) };
+        const returnData = {}
+        returnData['italy'] = filter(result);
+        return returnData;
     }).catch(err => {
         return {};
     });

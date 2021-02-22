@@ -128,9 +128,9 @@ async function handleResponseLatest(res, inputRegions) {
         const query = `${utils.BASE_URL}/db/latest/${region}`
         const latestData = await utils.fetchJSON(query);
 
-        result[region] = latestData.result;
+        result[region] = latestData[region];
 
-        if (Object.keys(result[region]).length === 0) {
+        if (Object.keys(latestData[region]).length === 0) {
             return utils.handleError(res, 404, 'No data found in database');
         }
     }
@@ -148,7 +148,7 @@ async function getDataByDates(endPoint, from, to) {
         // I know data is in the database.
         const query = `${utils.BASE_URL}/db/${endPoint}?from=${from}&to=${to}`;
         const dbEntries = await utils.fetchJSON(query);
-        return dbEntries.result;
+        return dbEntries[endPoint];
     } else {
         // Get dates between from and to.
         const dates = utils.getDatesBetween(from, to);
@@ -158,7 +158,7 @@ async function getDataByDates(endPoint, from, to) {
         }
         
         const result = [];
-        for (const entry of endPointData.data) {
+        for (const entry of endPointData) {
             if (dates.includes(entry.date)) {
                 result.push(entry);
             }
@@ -174,13 +174,13 @@ async function fetchEndPoint(endPoint) {
         return undefined;
     }
 
-    const data = {data : fetchedData['result']};
+    const data = fetchedData[endPoint];
 
     // Post data on database adapter.
     console.log(`[DATA COLLECTOR] - Updating db for endpoint ${endPoint}`);
     await fetch(`${utils.BASE_URL}/db/${endPoint}`, {
         method: 'post',
-        body:    JSON.stringify(data),
+        body:    JSON.stringify({data: data}),
         headers: { 'Content-Type': 'application/json' }
     });
     

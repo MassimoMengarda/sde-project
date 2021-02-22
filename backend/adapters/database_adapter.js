@@ -100,9 +100,12 @@ async function handleSelectLatestResponse(res, region) {
     if (entry === undefined || entry === null) {
         return utils.handleError(res, 404, `No data can be found in database for region ${region}`);
     }
+
+    const result = {};
+    result[region] = entry;
     
     console.log(`[DATABASE ADAPTER] - Done\n`);
-    res.status(200).send({result: entry});
+    res.status(200).send(result);
 }
 
 // Function to handle the select requests to the database.
@@ -135,7 +138,7 @@ const handleSelectRequest = async (req, res) => {
 async function handleSelectResponse(res, region, from, to) {
     const dates = utils.getDatesBetween(from, to);
 
-    const result = [];
+    const data = [];
     
     // Get all the data needed.
     for (const date of dates) {
@@ -149,16 +152,19 @@ async function handleSelectResponse(res, region, from, to) {
             });
         });
         if (entry !== undefined && entry !== null) {
-            result.push(entry);
+            data.push(entry);
         }
     }
 
-    if (result.length == 0) {
+    if (data.length == 0) {
         return utils.handleError(res, 404, `No data has been found for date ${from} in the database`);
     }
+
+    const result = {};
+    result[region] = data;
     
     console.log(`[DATABASE ADAPTER] - Done\n`);
-    res.status(200).send({result: result});
+    res.status(200).send(result);
 }
 
 // Function to handle the insert requests to the database.
