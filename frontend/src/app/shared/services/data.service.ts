@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class DataService {
-  private baseUrl = 'http://localhost:8080/data';
+  private baseUrl = 'https://sde-project-unitn.herokuapp.com/data';
 
   public constructor(private httpSvc: HttpClient) {}
 

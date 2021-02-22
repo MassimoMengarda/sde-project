@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class MapService {
+  // private baseUrl = 'https://sde-project-unitn.herokuapp.com/map/';
   private baseUrl = 'http://localhost:8080/map/';
 
   public constructor(private httpSvc: HttpClient) {}

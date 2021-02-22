@@ -7,7 +7,7 @@ import { RegionDataset } from 'src/app/shared/models/region-dataset.model';
   providedIn: 'root',
 })
 export class RegionMapperService {
-  private baseUrl = 'http://localhost:8080/';
+  private baseUrl = 'https://sde-project-unitn.herokuapp.com/';
 
   public constructor(private httpSvc: HttpClient) {}
 
