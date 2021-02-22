@@ -108,7 +108,6 @@ export class ProvincesChartComponent implements OnChanges {
         res[currentCountry].forEach((day) => {
           for (let p in day.provinces) {
             cases[p] += day.provinces[p].cases;
-            // TODO: set necessario solo ultima volta, trovare modo per non fare un altro ciclo for
             this.provincesBox.set(p, cases[p]);
           }
         });
