@@ -72,6 +72,7 @@ export class MapComponent implements OnChanges {
   // Function to intercepets the date changes and update 'date' variable
   public dateChange(event) {
     this.date = this.datePipe.transform(event.value, 'yyyy-MM-dd');
+    this.getMapImage();
   }
 
   // Support function to transfor the blob into an image
