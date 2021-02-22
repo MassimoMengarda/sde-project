@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const regions = require('../utils/regions');
+const utils = require('../utils/utils');
 const secret = require('../secret');
 
 const COUNTRIES_BASE_URL = 'https://countries-cities.p.rapidapi.com/location/country/';

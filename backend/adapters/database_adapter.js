@@ -102,14 +102,14 @@ async function handleSelectLatestResponse(res, region) {
     }
     
     console.log(`[DATABASE ADAPTER] - Done\n`);
-    res.status(200).send(entry);
+    res.status(200).send({result: entry});
 }
 
 // Function to handle the select requests to the database.
 const handleSelectRequest = async (req, res) => {
     const region = req.params.region;
     const from = utils.getDate(req.query.from);
-    const to = req.query.to === undefined ? from : utils.getDate(req.query.to);
+    const to = utils.getDate(req.query.to);
 
     console.log(`[DATABASE ADAPTER] - Select request for region ${region} and dates ${from} ${to}`);
     
@@ -118,9 +118,14 @@ const handleSelectRequest = async (req, res) => {
         return utils.handleError(res, 400, `${region} is not a valid region`);
     }
 
-    // Need at least one date.
-    if (!utils.isValidDate(from) || !utils.isValidDate(to)) {
+    // Check if from is a valid date.
+    if (!utils.isValidDate(from)) {
         return utils.handleError(res, 400, `${from} is not a valid date`);
+    }
+
+    // Check if to is a valid date.
+    if (!utils.isValidDate(to)) {
+        return utils.handleError(res, 400, `${to} is not a valid date`);
     }
 
     await handleSelectResponse(res, region, from, to);
@@ -211,6 +216,7 @@ async function handleRegionInfoResponse(res, region) {
         });
     });
     
+    // We assume we get the entry, it should be guaranteed
     console.log(`[DATABASE ADAPTER] - Done\n`);
     res.status(200).send(entry);
 }

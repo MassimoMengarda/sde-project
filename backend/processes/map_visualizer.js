@@ -41,7 +41,7 @@ async function handleMapResponse(res, region, date) {
     });
 
     if (map === undefined) {
-        return utils.handleError(res, 500, 'Cannot reach QuickChart');
+        return utils.handleError(res, 500, 'Cannot reach MapQuest');
     }
 
     // Set the right content type.

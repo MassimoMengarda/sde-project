@@ -5,7 +5,6 @@ const regions = require('../utils/regions');
 // Function to handle the requests to the endpoint. 
 const handleDataRequest = async (req, res) => {
     const date = utils.getDate(req.query.date);
-
     const from = utils.getDate(req.query.from);
     const to = utils.getDate(req.query.to);
 
@@ -92,6 +91,7 @@ async function handleResponseAllData(res, inputRegions) {
 
     // Fetch the endpoints.
     const result = {}
+    
     for (const region of inputRegions) {
         result[region] = await fetchEndPoint(region);
         if (result[region] === undefined) {
@@ -126,7 +126,10 @@ async function handleResponseLatest(res, inputRegions) {
     const result = {}
     for (const region of inputRegions) {
         const query = `${utils.BASE_URL}/db/latest/${region}`
-        result[region] = await utils.fetchJSON(query);
+        const latestData = await utils.fetchJSON(query);
+
+        result[region] = latestData.result;
+
         if (Object.keys(result[region]).length === 0) {
             return utils.handleError(res, 404, 'No data found in database');
         }
@@ -187,7 +190,7 @@ async function fetchEndPoint(endPoint) {
 
 // Function to check if a date is present as record in a db of a given endpoint.
 async function isInDB(endPoint, date) {
-    const query = `${utils.BASE_URL}/db/${endPoint}?from=${date}`;
+    const query = `${utils.BASE_URL}/db/${endPoint}?from=${date}&to=${date}`;
     const result = await fetch(query).then(resFetch => {
         return resFetch.ok;
     });
