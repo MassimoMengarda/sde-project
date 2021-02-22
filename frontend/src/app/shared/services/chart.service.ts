@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ChartService {
-  private baseUrl = 'http://localhost:8080/chart/';
+  private baseUrl = 'https://sde-project-unitn.herokuapp.com/chart/';
 
   public constructor(private httpSvc: HttpClient) {}
 
