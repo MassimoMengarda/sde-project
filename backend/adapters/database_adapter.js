@@ -230,10 +230,10 @@ async function handleRegionInfoResponse(res, region) {
 // Function that inserts data in a database.
 function insertNewData(db, data) {
     for (const entry of data) {
-        db.insert(entry, (err) => {
+        db.update({date: entry.date}, entry, { upsert: true }, (err) => {
             if (err) {
-                // Just skip, if we can have the violation of unique constraint on date.
-                // console.log(err);
+                console.log('[DATABASE ADAPTER] - Error during insert');
+                console.log(err);
             }
         });
     }
